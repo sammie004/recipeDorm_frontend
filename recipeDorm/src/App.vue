@@ -1,12 +1,18 @@
 <template>
   <div>
-    <navbar />
+    <Navbar v-if="$route.path === '/home'" />
     <RouterView />
+    <!-- <cards v-if="$route.path === '/home'" /> -->
   </div>
 </template>
 
 <script setup>
-import navbar from '@/components/navbar.vue'
+import cards from '@/components/cards.vue'
+import Navbar from '@/components/Navbar.vue'
 import { RouterView } from 'vue-router' // Ensure this import
 </script>
-<style></style>
+<style>
+body {
+  background-color: black;
+}
+</style>

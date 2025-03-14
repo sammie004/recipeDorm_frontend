@@ -27,7 +27,9 @@
           />
         </div>
 
-        <button type="submit" class="login-btn">Sign In</button>
+        <button type="submit" class="login-btn" @click="redirect">
+          Sign In
+        </button>
         <p class="continue">or</p>
 
         <button class="google-btn" @click="handleGoogleLogin">
@@ -45,7 +47,8 @@
 
 <script setup>
 import { ref } from 'vue'
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const email = ref('')
 const password = ref('')
 
@@ -62,10 +65,14 @@ const handleGoogleLogin = () => {
   console.log('Redirecting to Google Authentication...')
   alert('Google Authentication is not implemented yet.')
 }
+const redirect = () => {
+  console.log('Redirecting to Home Page')
+  // Navigation logic here
+  router.push('/home')
+}
 </script>
 
 <style scoped>
-
 /* Background Styling */
 .login-container {
   height: 100vh;
