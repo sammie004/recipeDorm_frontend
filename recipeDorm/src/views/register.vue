@@ -5,62 +5,70 @@
       <p>Join us and explore delicious recipes!</p>
 
       <form @submit.prevent="handleRegister">
+        <!-- Name Field -->
         <div class="input-group">
-          <label for="username">Username</label>
+          <label for="name">Full Name</label>
           <input
             type="text"
-            id="name"
-            v-model="name"
-            :class="{ 'input-error': error }"
+            id="userName"
+            v-model="formData.userName"
+            :class="{ 'input-error': nameError }"
             placeholder="Enter your full name"
             required
           />
-          <p class="error-msg" v-if="error">
+          <p class="error-msg" v-if="nameError">
             Your username should not contain spaces
           </p>
         </div>
 
+        <!-- Email Field -->
         <div class="input-group">
           <label for="email">Email</label>
           <input
             type="email"
             id="email"
-            v-model="email"
+            v-model="formData.email"
             placeholder="Enter your email"
             required
           />
         </div>
 
+        <!-- Password Field -->
         <div class="input-group">
           <label for="password">Password</label>
           <input
             type="password"
             id="password"
-            v-model="password"
+            v-model="formData.password"
             placeholder="Enter your password"
             required
           />
         </div>
 
+        <!-- Confirm Password Field -->
         <div class="input-group">
           <label for="confirm-password">Confirm Password</label>
           <input
             type="password"
             id="confirm-password"
-            v-model="confirmPassword"
+            v-model="formData.confirmPassword"
             placeholder="Confirm your password"
             required
           />
         </div>
 
+        <!-- Sign Up Button -->
         <button type="submit" class="register-btn">Sign Up</button>
+
         <p class="continue">or</p>
 
-        <button class="google-btn" @click="handleGoogleRegister">
+        <!-- Google Register Button -->
+        <button type="button" class="google-btn" @click="handleGoogleRegister">
           Continue with Google <i class="bx bxl-google"></i>
         </button>
       </form>
 
+      <!-- Redirect to Login -->
       <p class="login-text">
         Already have an account?
         <router-link to="/login" class="login-link">Sign In</router-link>
@@ -72,35 +80,58 @@
 <script setup>
 import { ref } from 'vue'
 
-const name = ref('')
-const email = ref('')
-const password = ref('')
-const confirmPassword = ref('')
-const error = ref(false)
+// Reactive form data
+const formData = ref({
+  email: '',
+  userName: '',
+  password: ''
+})
 
-const handleRegister = () => {
-  error.value = false
+// Error state for name validation
+const nameError = ref(false)
+
+// Handle user registration
+const handleRegister = async () => {
+  nameError.value = false
+
+  // Validate input fields
   if (
-    !name.value ||
-    !email.value ||
-    !password.value ||
-    !confirmPassword.value
+    !formData.value.userName ||
+    !formData.value.email ||
+    !formData.value.password ||
+    !formData.value.confirmPassword
   ) {
     alert('Please fill in all fields.')
     return
   }
-  if (password.value !== confirmPassword.value) {
+  if (formData.value.password !== formData.value.confirmPassword) {
     alert('Passwords do not match!')
     return
   }
-  if (name.value.includes(' ')) {
-    error.value = true
+  if (formData.value.userName.includes(' ')) {
+    nameError.value = true
     return
   }
-  console.log('Registering:', name.value, email.value)
-  // Add registration logic here
+
+  // try {
+  //   const response = await fetch('https://recipedormapi20250315070938.azurewebsites.net/api/Auth/register', {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify(formData.value)
+  //   })
+
+  //   if (!response.ok) throw new Error('Signup failed!')
+
+  //   const data = await response.json()
+  //   console.log('Signup successful:', data)
+  //   alert('Account created successfully!')
+  // } catch (error) {
+  //   console.error('Error registering account:', error)
+  //   alert('Error registering account')
+  // }
 }
 
+// Handle Google authentication
 const handleGoogleRegister = () => {
   console.log('Redirecting to Google Authentication...')
   // Implement Google OAuth authentication logic
@@ -176,7 +207,6 @@ p {
 /* Error Styling */
 .input-error {
   border: 2px solid rgba(255, 55, 55, 0.771) !important;
-  /* background: rgb(255, 52, 52) !important; */
 }
 
 .error-msg {
