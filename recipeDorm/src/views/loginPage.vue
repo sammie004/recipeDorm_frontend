@@ -71,9 +71,11 @@ const handleGoogleLogin = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
+  background: white;
   position: relative;
   left: 36%;
+  /* border: 1px solid black; */
+  top: -2%;
 }
 
 .login-box {
@@ -82,6 +84,7 @@ const handleGoogleLogin = () => {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   width: 350px;
+  border: 1px solid black;
   text-align: center;
 }
 
