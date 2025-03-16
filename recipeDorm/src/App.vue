@@ -1,12 +1,21 @@
 <template>
   <div>
-    <navbar />
+    <Navbar v-if="$route.path === '/home'" />1
+    <!-- <Navbar /> create new nav components -->
     <RouterView />
+    <addrecipesNav v-if="$route.path === '/addRecipes'" />
+    <!-- <cards v-if="$route.path === '/home'" /> -->
   </div>
 </template>
 
 <script setup>
-import navbar from '@/components/navbar.vue'
+import cards from '@/components/cards.vue'
+import Navbar from '@/components/Navbar.vue'
+import addrecipesNav from './components/addrecipesNav.vue'
 import { RouterView } from 'vue-router' // Ensure this import
 </script>
-<style></style>
+<style>
+body {
+  background-color: white;
+}
+</style>

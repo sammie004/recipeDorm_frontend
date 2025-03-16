@@ -31,7 +31,7 @@
         <p class="continue">or</p>
 
         <button class="google-btn" @click="handleGoogleLogin">
-          Continue with Google <i class="bx bxl-google"></i>
+          <i class="bx bxl-google"></i> Continue with Google
         </button>
       </form>
 
@@ -45,7 +45,8 @@
 
 <script setup>
 import { ref } from 'vue'
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const email = ref('')
 const password = ref('')
 
@@ -55,7 +56,7 @@ const handleLogin = () => {
     return
   }
   console.log('Logging in with:', email.value, password.value)
-  // Add authentication logic here
+  router.push('/home')
 }
 
 const handleGoogleLogin = () => {
@@ -65,43 +66,36 @@ const handleGoogleLogin = () => {
 </script>
 
 <style scoped>
-
-/* Background Styling */
 .login-container {
   height: 100vh;
   display: flex;
-  position: absolute;
-  left: 35%;
-  top: 0;
   align-items: center;
   justify-content: center;
-  background: url('@/assets/food-bg.jpg') no-repeat center center/cover;
+  background: #f5f5f5;
+  position: relative;
+  left: 36%;
 }
 
-/* Glassmorphism Login Box */
 .login-box {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(15px);
+  background: white;
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   width: 350px;
   text-align: center;
 }
 
-/* Text Styling */
 h2 {
-  color: #fff;
+  color: #333;
   font-size: 1.8rem;
   margin-bottom: 10px;
 }
 
 p {
-  color: #ddd;
+  color: #666;
   margin-bottom: 20px;
 }
 
-/* Input Fields */
 .input-group {
   margin-bottom: 15px;
   text-align: left;
@@ -109,7 +103,7 @@ p {
 
 .input-group label {
   display: block;
-  color: #fff;
+  color: #333;
   font-size: 0.9rem;
   margin-bottom: 5px;
 }
@@ -118,71 +112,59 @@ p {
   width: 100%;
   padding: 12px;
   border-radius: 8px;
-  border: none;
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  outline: none;
+  border: 1px solid #ccc;
+  background: white;
+  color: #333;
   font-size: 1rem;
-  transition: 0.3s;
 }
 
-.input-group input:focus {
-  background: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-}
-
-/* Sign-in Button */
 .login-btn {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(to right, #ff7e5f, #feb47b);
+  background: #705d5d;
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.4s ease-in-out;
+  transition: 0.3s;
 }
 
 .login-btn:hover {
-  background: linear-gradient(to right, #feb47b, #ff7e5f);
+  background: #705d5d;
   transform: scale(1.05);
-  box-shadow: 0 8px 15px rgba(255, 126, 95, 0.3);
+  box-shadow: 0 8px 15px #3b2f2f;
 }
 
-/* Continue Text */
 .continue {
-  color: #fff;
+  color: #666;
   margin: 20px 0;
 }
 
-/* Google Button */
 .google-btn {
   width: 100%;
   padding: 12px;
-  border: 1px solid white;
-  background: transparent;
-  color: white;
+  border: 1px solid #ccc;
+  background: white;
+  color: #333;
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.4s ease-in-out;
+  transition: 0.3s;
 }
 
 .google-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #f0f0f0;
   transform: scale(1.05);
-  box-shadow: 0 8px 15px rgba(255, 255, 255, 0.3);
 }
 
-/* Signup Text */
 .signup-text {
   margin-top: 15px;
-  color: #fff;
+  color: #333;
 }
 
 .signup-link {
-  color: #ffb84d;
+  color: #3b2f2f;
   text-decoration: none;
 }
 
