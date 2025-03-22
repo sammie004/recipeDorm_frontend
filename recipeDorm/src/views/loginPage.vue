@@ -46,6 +46,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+
 const router = useRouter()
 const email = ref('')
 const password = ref('')
@@ -61,33 +62,35 @@ const handleLogin = () => {
 
 const handleGoogleLogin = () => {
   console.log('Redirecting to Google Authentication...')
-  alert('Google Authentication is not implemented yet.')
+  window.location.href =
+    'https://recipedormapi20250315070938.azurewebsites.net/api/auth/google-sign-in'
 }
 </script>
 
 <style scoped>
+/* Center the login box */
 .login-container {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: white;
-  position: relative;
-  left: 36%;
-  /* border: 1px solid black; */
-  top: -2%;
+  padding: 20px;
 }
 
+/* Make login box flexible */
 .login-box {
   background: white;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 350px;
-  border: 1px solid black;
+  max-width: 400px; /* Responsive width */
+  width: 100%;
   text-align: center;
+  border: 1px solid black;
 }
 
+/* Title & paragraph */
 h2 {
   color: #333;
   font-size: 1.8rem;
@@ -99,6 +102,7 @@ p {
   margin-bottom: 20px;
 }
 
+/* Input group styling */
 .input-group {
   margin-bottom: 15px;
   text-align: left;
@@ -121,6 +125,7 @@ p {
   font-size: 1rem;
 }
 
+/* Buttons */
 .login-btn {
   width: 100%;
   padding: 12px;
@@ -161,6 +166,7 @@ p {
   transform: scale(1.05);
 }
 
+/* Signup text */
 .signup-text {
   margin-top: 15px;
   color: #333;
@@ -173,5 +179,49 @@ p {
 
 .signup-link:hover {
   text-decoration: underline;
+}
+
+/* 🔹 Responsive Design for Mobile */
+@media (max-width: 768px) {
+  .login-box {
+    max-width: 90%;
+    padding: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .input-group input {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .login-btn,
+  .google-btn {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-box {
+    padding: 1rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  .input-group input {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .login-btn,
+  .google-btn {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
 }
 </style>

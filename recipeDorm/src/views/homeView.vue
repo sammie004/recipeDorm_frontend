@@ -87,6 +87,7 @@ const goToDetails = () => {
   gap: 15px; /* Controls spacing between cards */
   justify-content: center;
   position: relative;
+  top: 8%;
   left: 2%;
 }
 
@@ -106,12 +107,17 @@ const goToDetails = () => {
 @media (max-width: 900px) {
   .recipe-container {
     grid-template-columns: repeat(2, 300px);
+    position: relative;
+    left: 5%;
   }
 }
 
 @media (max-width: 600px) {
   .recipe-container {
     grid-template-columns: 300px;
+    position: relative;
+    left: 14%;
+    top: 20%;
   }
 }
 </style>

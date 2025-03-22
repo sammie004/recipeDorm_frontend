@@ -13,12 +13,12 @@
       <button @click="searchRecipes"><i class="bx bx-search bx-xs"></i></button>
     </div>
 
-    <!-- Add Recipe Button -->
-    <button class="add-recipe-btn" @click="addRecipe">+ Add Recipe</button>
-
-    <!-- Profile Icon -->
-    <div class="profile" @click="logout">
-      <img src="@/assets/lapo.jpg" alt="Profile" class="profile-pic" />
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+      <button class="add-recipe-btn" @click="addRecipe">+ Add Recipe</button>
+      <div class="profile" @click="logout">
+        <img src="@/assets/lapo.jpg" alt="Profile" class="profile-pic" />
+      </div>
     </div>
   </nav>
 </template>
@@ -51,21 +51,21 @@ const logout = () => {
   align-items: center;
   justify-content: space-between;
   background: linear-gradient(to right, #3b2f2f, #705d5d);
-  /* Beautiful gradient */
-  padding: 12px 25px;
+  padding: 12px 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
+  flex-wrap: wrap;
 }
 
 /* Logo Styling */
 .logo {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'poppins', Courier, monospace;
   color: white;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -79,6 +79,8 @@ const logout = () => {
   padding: 5px 10px;
   border-radius: 20px;
   backdrop-filter: blur(10px);
+  flex-grow: 1;
+  max-width: 400px;
 }
 
 .search-bar input {
@@ -88,8 +90,7 @@ const logout = () => {
   outline: none;
   color: white;
   font-size: 1rem;
-  width: 300px;
-  height: 12px;
+  width: 100%;
 }
 
 .search-bar input::placeholder {
@@ -100,29 +101,33 @@ const logout = () => {
   background-color: transparent;
   border: none;
   color: white;
-  /* Center the icon */
   display: flex;
   transition: 0.5s ease;
-  position: relative;
-  right: 10px;
+  cursor: pointer;
 }
 
 .search-bar button:hover {
-  transform: scale(1.5);
-  cursor: pointer;
+  transform: scale(1.2);
+}
+
+/* Navigation Buttons */
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* Add Recipe Button */
 .add-recipe-btn {
   background: white;
-  padding: 10px 18px;
+  padding: 10px 15px;
   border: none;
   border-radius: 20px;
   cursor: pointer;
   font-weight: bold;
   font-size: 1rem;
   transition: 0.3s ease-in-out;
-  color: 705d5d;
+  color: #705d5d;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
@@ -134,8 +139,8 @@ const logout = () => {
 
 /* Profile Picture */
 .profile {
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
   overflow: hidden;
   border-radius: 50%;
   border: 2px solid white;
@@ -151,5 +156,29 @@ const logout = () => {
 
 .profile-pic:hover {
   transform: scale(1.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+  }
+
+  .search-bar {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .nav-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .add-recipe-btn {
+    width: 100%;
+    text-align: center;
+  }
 }
 </style>

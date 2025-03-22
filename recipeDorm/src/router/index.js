@@ -5,12 +5,16 @@ import loginpage from '../views/loginPage.vue';
 import register from '../views/register.vue';
 import addRecipes from '../views/addRecipes.vue'
 import recipeDetails from '../views/recipeDetails.vue'
+import home from '../views/home.vue'
+// import home from '../views/home.vue'
 // import path from 'path';
 import landingPage from '../views/landing.vue'
+// import path from 'path';
 // import path from 'path';
 
 
 const routes = [
+  {path: '/', component: home, name: 'homePage'},
   { path: '/home', component: HomeView, name: 'Home' },
   { path: '/about', component: AboutView, name: 'About' },
   {path: '/login', component: loginpage, name: 'login'},

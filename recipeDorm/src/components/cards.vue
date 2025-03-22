@@ -57,7 +57,7 @@ const goToDetails = () => {
 /* CARD CONTAINER */
 .recipe-card {
   position: relative;
-  top: 30%;
+  top: 40%;
   left: -14%;
   background: hsl(0, 17%, 90%);
   border-radius: 12px;

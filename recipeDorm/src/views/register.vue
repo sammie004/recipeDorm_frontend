@@ -84,7 +84,8 @@ import { ref } from 'vue'
 const formData = ref({
   email: '',
   userName: '',
-  password: ''
+  password: '',
+  confirmPassword: ''
 })
 
 // Error state for name validation
@@ -103,11 +104,13 @@ const handleRegister = () => {
 // Handle Google authentication
 const handleGoogleRegister = () => {
   console.log('Redirecting to Google Authentication...')
+  window.location.href =
+    'https://recipedormapi20250315070938.azurewebsites.net/api/auth/google-sign-in'
 }
 </script>
 
 <style scoped>
-/* Background Styling */
+/* Ensure container is centered and scales well */
 .register-container {
   height: 100vh;
   display: flex;
@@ -115,8 +118,9 @@ const handleGoogleRegister = () => {
   justify-content: center;
   position: relative;
   top: 10%;
-  left: 35%;
-  background: #f9f9f9;
+  /* left: 35%; */
+  background: white;
+  padding: 20px;
 }
 
 /* Register Box */
@@ -125,10 +129,13 @@ const handleGoogleRegister = () => {
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 350px;
+  width: 90%;
+  max-width: 400px;
   text-align: center;
+  border: 1px solid black;
 }
 
+/* Header Text */
 h2 {
   color: #333;
   font-size: 1.8rem;
@@ -167,6 +174,17 @@ p {
   box-shadow: 0 0 5px rgba(255, 126, 95, 0.5);
 }
 
+/* Error Message */
+.error-msg {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+
+.input-error {
+  border-color: red !important;
+}
+
 /* Register Button */
 .register-btn {
   width: 100%;
@@ -177,7 +195,7 @@ p {
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  transition: 0.3s;
 }
 
 .register-btn:hover {
@@ -195,7 +213,7 @@ p {
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  transition: 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -220,5 +238,28 @@ p {
 
 .login-link:hover {
   text-decoration: underline;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 600px) {
+  .register-box {
+    padding: 1.5rem;
+    width: 100%;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .input-group input {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .register-btn,
+  .google-btn {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
 }
 </style>
