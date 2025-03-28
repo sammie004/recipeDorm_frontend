@@ -6,7 +6,7 @@
     </button>
 
     <!-- Logo -->
-    <div class="logo" v-if="!isCollapsed">RecipeDorm</div>
+    <!-- <div class="logo" v-if="!isCollapsed">RecipeDorm</div> -->
 
     <!-- Search Button -->
     <button class="search-btn" @click="goToSearch">
@@ -21,6 +21,10 @@
       </button>
 
       <div class="nav-links">
+        <button @click="GoHome" :title="'home'">
+          <i class="bx bxs-home"></i>
+          <span v-if="!isCollapsed">Home</span>
+        </button>
         <button @click="bookmarkRecipes" :title="'Bookmark'">
           <i class="bx bxs-bookmark"></i>
           <span v-if="!isCollapsed">Saved Recipes</span>
@@ -69,6 +73,9 @@ const myRecipes = () => {
 
 const settings = () => {
   router.push('/settings')
+}
+const GoHome = () => {
+  router.push('/home')
 }
 
 const logout = () => {
@@ -124,8 +131,7 @@ const logout = () => {
   cursor: pointer;
   font-size: 1rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  float: left;
   padding: 10px;
   width: 100%;
   transition: 0.3s background;
@@ -146,6 +152,7 @@ const logout = () => {
   gap: 15px;
   width: 100%;
   align-items: center;
+  float: left;
 }
 
 .nav-links button {
@@ -179,6 +186,7 @@ const logout = () => {
   border: none;
   border-radius: 20px;
   cursor: pointer;
+  float: left;
   font-weight: bold;
   color: #705d5d;
 }

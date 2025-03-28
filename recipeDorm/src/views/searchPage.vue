@@ -1,5 +1,6 @@
 <template>
-  <AddrecipesNav :username="username" />
+  <!-- <AddrecipesNav :username="username" /> -->
+  <navbar />
 
   <div class="search-container">
     <h1 class="title" ref="title"></h1>
@@ -35,7 +36,8 @@
     </div>
 
     <p v-else-if="!loading && !error" class="no-results">
-      Oops😔, Our chef just ran out of recipes! Try cooking up a different search.
+      Oops😔, Our chef just ran out of recipes! Try cooking up a different
+      search.
     </p>
   </div>
 </template>
@@ -43,6 +45,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import AddrecipesNav from '@/components/addrecipesNav.vue'
+import Navbar from '@/components/Navbar.vue'
 import RecipeCard from '@/components/cards.vue'
 import Typed from 'typed.js'
 
@@ -184,7 +187,7 @@ onMounted(() => {
   text-align: center;
   position: absolute;
   top: 50%;
-  left: 15%;
+  left: 17.5%;
 }
 
 .recipe-list {
@@ -192,11 +195,12 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
+  /* position: absolute; */
 }
 
 .loading {
   font-size: 1.2rem;
-  color: blue;
+  color: black;
   position: relative;
   left: -15%;
 }
@@ -213,8 +217,8 @@ onMounted(() => {
 .progress {
   width: 0;
   height: 100%;
-  background: blue;
-  animation: load 4s ease-in-out forwards;
+  background: hsl(0, 11%, 25%);
+  animation: load 7s ease-in-out forwards;
 }
 
 @keyframes load {

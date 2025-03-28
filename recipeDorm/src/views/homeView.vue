@@ -1,13 +1,15 @@
 <template>
-  <p class="user">welcome, <span class="username"></span></p>
-  <div class="recipe-container" @click="goToDetails">
+  <p class="user">Welcome, <span class="username"></span></p>
+
+  <div class="recipe-container">
     <RecipeCard
       v-for="(recipe, index) in recipes"
       :key="index"
-      :id="index"
+      :id="recipe.idMeal"
       :title="recipe.title"
       :description="recipe.description"
       :image="recipe.image"
+      @click="goToDetails(recipe.idMeal)"
     />
   </div>
 </template>
@@ -15,72 +17,41 @@
 <script setup>
 import RecipeCard from '@/components/cards.vue'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
-import { onMounted } from 'vue'
-const router = useRouter()
+import { ref, onMounted } from 'vue'
 
-// Sample Recipe Data – updated to use valid Unsplash source links
-const recipes = ref([
-  {
-    title: 'Spaghetti Carbonara',
-    description: 'A creamy Italian pasta dish with bacon and cheese.',
-    image: '/recipeDorm/src/assets/spaghetti-carbonara.jpg'
-  },
-  {
-    title: 'Classic Margherita Pizza',
-    description: 'Tomato sauce, fresh basil, and mozzarella cheese.',
-    image: 'hhttps://unsplash.com/photos/pizza-on-chopping-board-MqT0asuoIcU'
-  },
-  {
-    title: 'Grilled Salmon',
-    description: 'Fresh salmon fillet grilled to perfection.',
-    image:
-      'https://unsplash.com/photos/grilled-meat-with-green-vegetable-on-black-ceramic-plate-4WPcz_5RVMk'
-  },
-  {
-    title: 'Chocolate Cake',
-    description: 'Rich and moist chocolate cake with frosting.',
-    image:
-      'https://unsplash.com/photos/chocolate-cake-with-strawberry-on-white-ceramic-plate-6jHpcBPw7i8'
-  },
-  {
-    title: 'Avocado Toast',
-    description: 'Creamy avocado on crispy toast with toppings.',
-    image: 'https://source.unsplash.com/400x300/?avocado-toast'
-  },
-  {
-    title: 'Chicken Biryani',
-    description: 'Aromatic rice dish with spices and chicken.',
-    image: 'https://source.unsplash.com/400x300/?biryani'
-  },
-  {
-    title: 'French Croissant',
-    description: 'Flaky, buttery, and perfectly golden.',
-    image: 'https://source.unsplash.com/400x300/?croissant'
-  },
-  {
-    title: 'Caesar Salad',
-    description: 'Crisp lettuce with creamy dressing and croutons.',
-    image: 'https://source.unsplash.com/400x300/?salad'
-  },
-  {
-    title: 'Strawberry Smoothie',
-    description: 'A refreshing and healthy berry smoothie.',
-    image: 'https://source.unsplash.com/400x300/?smoothie'
-  },
-  {
-    title: 'Pancakes',
-    description: 'Fluffy pancakes with maple syrup and butter.',
-    image: 'https://source.unsplash.com/400x300/?pancakes'
+const router = useRouter()
+const recipes = ref([])
+
+// Fetch recipes from TheMealDB API
+const fetchRecipes = async () => {
+  try {
+    const res = await fetch(
+      'https://www.themealdb.com/api/json/v1/1/search.php?s='
+    )
+    const data = await res.json()
+
+    // Map response to match component props
+    recipes.value = data.meals.map(meal => ({
+      idMeal: meal.idMeal,
+      title: meal.strMeal,
+      description: meal.strInstructions.substring(0, 100) + '...', // Short description
+      image: meal.strMealThumb
+    }))
+  } catch (error) {
+    console.error('Error fetching recipes:', error)
   }
-])
-const goToDetails = () => {
-  console.log('Navigating to recipe details')
-  route
 }
+
+// Navigate to details page (modify route as needed)
+const goToDetails = id => {
+  router.push({ name: 'RecipeDetails', params: { id } })
+}
+
 onMounted(() => {
+  fetchRecipes()
+
   const username = document.querySelector('.username')
-  const user = localStorage.getItem('username')
+  const user = localStorage.getItem('username') || 'Guest'
   username.innerHTML = user
 })
 </script>
@@ -102,6 +73,7 @@ onMounted(() => {
   left: 19%;
   font-size: 1.5rem;
   color: black;
+  margin-bottom: 60px;
 }
 .header {
   position: absolute;
@@ -120,7 +92,7 @@ onMounted(() => {
   .recipe-container {
     grid-template-columns: repeat(2, 300px);
     position: relative;
-    left: 5%;
+    left: 10%;
   }
 }
 
