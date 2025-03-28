@@ -35,7 +35,7 @@
     </div>
 
     <p v-else-if="!loading && !error" class="no-results">
-      Oops! Our chef just ran out of recipes! Try cooking up a different search.
+      Oops😔! Our chef just ran out of recipes! Try cooking up a different search.
     </p>
   </div>
 </template>
@@ -233,6 +233,6 @@ onMounted(() => {
 }
 .error {
   font-size: 1.5rem;
-  color: gray;
+  color: black;
 }
 </style>
