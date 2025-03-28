@@ -3,12 +3,12 @@
     <!-- Logo -->
     <div class="logo">RecipeDorm</div>
     <div class="userName">
-      Welcome,<span class="username">{{ username }}</span>
+      Hi,<span class="username">{{ username }}</span>
     </div>
     <!-- Profile Icon -->
-    <div class="profile" @click="logout">
+    <!-- <div class="profile" @click="logout">
       <img src="@/assets/lapo.jpg" alt="Profile" class="profile-pic" />
-    </div>
+    </div> -->
   </nav>
 </template>
 
@@ -80,7 +80,8 @@ const logout = () => {
 /* username */
 .userName {
   position: relative;
-  right: -10%;
+  right: 10%;
   font-size: 20px;
+  color: white;
 }
 </style>

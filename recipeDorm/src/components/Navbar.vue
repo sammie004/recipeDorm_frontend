@@ -129,6 +129,7 @@ const logout = () => {
   padding: 10px;
   width: 100%;
   transition: 0.3s background;
+  margin-bottom: 30px;
 }
 
 .search-btn:hover {
@@ -157,8 +158,9 @@ const logout = () => {
   text-align: left;
   width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: left;
+  justify-content: left;
+  float: left;
   margin-bottom: 30px;
   transition: 0.3s background;
 }
