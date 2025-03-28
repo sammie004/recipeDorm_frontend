@@ -9,34 +9,30 @@
     <!-- <div class="logo" v-if="!isCollapsed">RecipeDorm</div> -->
 
     <!-- Search Button -->
-    <button class="search-btn" @click="goToSearch">
-      <i class="bx bx-search"></i>
-      <span v-if="!isCollapsed">Search Recipes</span>
+    <button @click="GoHome" :title="'home'" class="home">
+      <i class="bx bxs-home"></i>
+      <span v-if="!isCollapsed">Home</span>
     </button>
-
     <!-- Navigation Buttons -->
     <div class="nav-buttons">
-      <button class="add-recipe-btn" @click="addRecipe" v-if="!isCollapsed">
-        + Add Recipe
-      </button>
-
       <div class="nav-links">
-        <button @click="GoHome" :title="'home'">
-          <i class="bx bxs-home"></i>
-          <span v-if="!isCollapsed">Home</span>
+        <button class="search-btn" @click="goToSearch">
+          <i class="bx bx-search"></i>
+          <span v-if="!isCollapsed">Search Recipes</span>
         </button>
+
         <button @click="bookmarkRecipes" :title="'Bookmark'">
           <i class="bx bxs-bookmark"></i>
           <span v-if="!isCollapsed">Saved Recipes</span>
         </button>
         <button @click="myRecipes" :title="'myRecipes'">
-          <i class="bx bxs-folder"></i>
+          <i class="bx bxs-bowl-hot"></i>
           <span v-if="!isCollapsed">My Recipes</span>
         </button>
         <button @click="settings" :title="'settings'">
           <i class="bx bxs-cog"></i> <span v-if="!isCollapsed">Settings</span>
         </button>
-        <button @click="logout" :title="'Logout'">
+        <button @click="logout" :title="'Logout'" class="logout">
           <i class="bx bx-log-out"></i> <span v-if="!isCollapsed">Logout</span>
         </button>
       </div>
@@ -57,10 +53,6 @@ const toggleSidebar = () => {
 
 const goToSearch = () => {
   router.push('/search')
-}
-
-const addRecipe = () => {
-  router.push('/addRecipes')
 }
 
 const bookmarkRecipes = () => {
@@ -141,9 +133,27 @@ const logout = () => {
 .search-btn:hover {
   background: rgba(255, 255, 255, 0.2);
 }
-
+.home {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  float: left;
+  padding: 10px;
+  width: 100%;
+  transition: 0.3s background;
+  margin-bottom: 30px;
+}
+.home:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.home i {
+  margin-right: 15px;
+}
 .search-btn i {
-  margin-right: 10px;
+  margin-right: 3px;
 }
 
 .nav-buttons {
@@ -189,5 +199,8 @@ const logout = () => {
   float: left;
   font-weight: bold;
   color: #705d5d;
+}
+.logout {
+  margin-top: 60px;
 }
 </style>

@@ -218,7 +218,7 @@ onMounted(() => {
   width: 0;
   height: 100%;
   background: hsl(0, 11%, 25%);
-  animation: load 7s ease-in-out forwards;
+  animation: load 8s ease-in-out forwards;
 }
 
 @keyframes load {
