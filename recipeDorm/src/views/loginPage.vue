@@ -72,11 +72,11 @@ const handleLogin = async () => {
     )
 
     const data = await response.json()
-
+    console.log(data)
     if (response.ok) {
       console.log('Login successful')
-      localStorage.setItem('username', data.username)
-      localStorage.setItem('token', data.token)
+      localStorage.setItem('username', data.data.username)
+      localStorage.setItem('token', data.data.token)
       router.push('/home')
     } else {
       console.error('Login failed:', data.message || 'Invalid credentials')
