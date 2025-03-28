@@ -15,35 +15,52 @@
   </div>
 
   <div class="results-container">
-    <div v-if="loading" class="loading">Loading recipes...</div>
+    <div v-if="loading" class="loading">
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+      <p>{{ loadingMessage }}</p>
+    </div>
     <div v-if="error" class="error">{{ error }}</div>
 
     <div v-if="recipes.length" class="recipe-list">
       <RecipeCard
         v-for="recipe in recipes"
-        :key="recipe.id"
-        :id="recipe.id"
-        :title="recipe.name"
+        :key="recipe.recipeId"
+        :id="recipe.recipeId"
+        :title="recipe.title"
         :description="recipe.description"
         :image="recipe.imageUrl"
       />
     </div>
 
-    <p v-else-if="!loading && !error">No recipes found.</p>
+    <p v-else-if="!loading && !error" class="no-results">
+      Oops! Our chef just ran out of recipes! Try cooking up a different search.
+    </p>
   </div>
 </template>
 
 <script setup>
-import AddrecipesNav from '@/components/addrecipesNav.vue'
-import cards from '@/components/cards.vue'
 import { ref, onMounted } from 'vue'
+import AddrecipesNav from '@/components/addrecipesNav.vue'
+import RecipeCard from '@/components/cards.vue'
 import Typed from 'typed.js'
 
-const query = ref('')
+const query = ref('rice')
 const recipes = ref([])
 const loading = ref(false)
 const error = ref(null)
 const title = ref(null)
+const username = ref('')
+const loadingMessage = ref('🔄 Mixing ingredients...')
+
+const messages = [
+  '🍳 Heating up the pan...',
+  '🔪 Chopping up some ideas...',
+  '🔥 Turning up the heat...',
+  '🥄 Stirring the magic...',
+  '🍽️ Plating up your dish...'
+]
 
 const fetchRecipes = async () => {
   if (!query.value.trim()) return
@@ -51,10 +68,21 @@ const fetchRecipes = async () => {
   loading.value = true
   error.value = null
   recipes.value = []
+  loadingMessage.value = messages[0]
+
+  let index = 1
+  const interval = setInterval(() => {
+    loadingMessage.value = messages[index % messages.length]
+    index++
+  }, 1500)
+
   const token = localStorage.getItem('token')
   try {
+    await new Promise(resolve => setTimeout(resolve, 4000)) // Extended loading effect
     const response = await fetch(
-      `https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/search?SearchQuery=${query.value}&page=1`,
+      `https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/search?SearchQuery=${encodeURIComponent(
+        query.value
+      )}&page=1`,
       {
         method: 'GET',
         headers: {
@@ -65,15 +93,16 @@ const fetchRecipes = async () => {
     )
 
     if (!response.ok) {
-      throw new Error('Failed to fetch recipes')
+      const errorText = await response.text()
+      throw new Error(`Error ${response.status}: ${errorText}`)
     }
 
     const data = await response.json()
-    recipes.value = data || []
-    console.log(data)
+    recipes.value = data.data?.data || []
   } catch (err) {
     error.value = err.message
   } finally {
+    clearInterval(interval)
     loading.value = false
   }
 }
@@ -88,6 +117,7 @@ onMounted(() => {
     typeSpeed: 50,
     loop: false
   })
+  fetchRecipes()
 })
 </script>
 
@@ -154,7 +184,7 @@ onMounted(() => {
   text-align: center;
   position: absolute;
   top: 50%;
-  left: 0;
+  left: 15%;
 }
 
 .recipe-list {
@@ -167,8 +197,40 @@ onMounted(() => {
 .loading {
   font-size: 1.2rem;
   color: blue;
+  position: relative;
+  left: -15%;
 }
 
+.progress-bar {
+  width: 200px;
+  height: 10px;
+  background: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px auto;
+}
+
+.progress {
+  width: 0;
+  height: 100%;
+  background: blue;
+  animation: load 4s ease-in-out forwards;
+}
+
+@keyframes load {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.no-results {
+  position: relative;
+  left: -15%;
+  color: red;
+}
 .error {
   font-size: 1.2rem;
   color: red;

@@ -4,7 +4,7 @@
 
     <div class="recipe-content">
       <h3 class="recipe-title">{{ title }}</h3>
-      <p class="recipe-description">{{ description }}</p>
+      <p class="recipe-description">{{ shortDescription }}</p>
     </div>
 
     <div class="recipe-actions">
@@ -25,11 +25,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  id: Number,
+  id: String, // using String as recipeId is a UUID string
   title: String,
   description: String,
   image: String
@@ -51,6 +51,14 @@ const toggleLike = () => {
 const goToDetails = () => {
   router.push({ name: 'RecipeDetails', params: { id: props.id } })
 }
+
+const shortDescription = computed(() => {
+  if (!props.description) return ''
+  const words = props.description.split(' ')
+  return words.length <= 5
+    ? props.description
+    : words.slice(0, 5).join(' ') + '...'
+})
 </script>
 
 <style scoped>
@@ -61,16 +69,14 @@ const goToDetails = () => {
   left: -14%;
   background: hsl(0, 17%, 90%);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   width: 300px; /* Consistent width */
   height: 300px; /* Consistent height */
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 0 3px 3px rbga(0, 0, 0, 0.1);
-
-  margin-bottom: 1.3rem; /* Adjust this to control spacing */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.3rem; /* Adjust spacing */
 }
 
 /* Hover Effect */
@@ -82,10 +88,13 @@ const goToDetails = () => {
 /* IMAGE */
 .recipe-image {
   width: 100%;
-  height: 200px; /* Fixed image height */
+  height: 100px; /* Fixed image height */
   object-fit: cover;
+  transition: 0.5s;
 }
-
+.recipe-image:hover {
+  transform: scale(1.2);
+}
 /* CONTENT */
 .recipe-content {
   padding: 15px;
@@ -95,7 +104,7 @@ const goToDetails = () => {
 
 /* TITLE */
 .recipe-title {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #333;
   margin-bottom: 10px;
