@@ -229,10 +229,10 @@ onMounted(() => {
 .no-results {
   position: relative;
   left: -15%;
-  color: red;
+  /* color: gray; */
 }
 .error {
-  font-size: 1.2rem;
-  color: red;
+  font-size: 1.5rem;
+  color: gray;
 }
 </style>

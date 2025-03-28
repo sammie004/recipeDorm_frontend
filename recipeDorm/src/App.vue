@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar v-if="$route.path === '/home'" />1
+    <Navbar v-if="$route.path === '/home'" />
     <!-- <Navbar /> create new nav components -->
     <RouterView />
     <addrecipesNav v-if="$route.path === '/addRecipes'" />
