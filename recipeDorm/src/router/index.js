@@ -9,6 +9,7 @@ import home from '../views/home.vue'
 // import home from '../views/home.vue'
 // import path from 'path';
 import landingPage from '../views/landing.vue'
+import settings from '../views/settings.vue'
 // import path from 'path';
 // import path from 'path';
 
@@ -21,6 +22,7 @@ const routes = [
   {path: '/register', component: register, name: 'register'},
   {path: '/addRecipes', component: addRecipes, name: 'addRecipes'},
   {path: '/landingPage', component: landingPage, name: 'landingPage'},
+  {path: '/settings', component: settings, name: 'settings'},
   {path: '/recipeDetails', component: recipeDetails, name: 'recipeDetails'}
 ];
 

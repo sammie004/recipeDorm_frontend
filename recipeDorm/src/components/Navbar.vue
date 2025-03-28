@@ -1,10 +1,15 @@
 <template>
-  <nav class="navbar">
+  <div :class="['sidebar', { collapsed: isCollapsed }]">
+    <!-- Toggle Button -->
+    <button class="toggle-btn" @click="toggleSidebar">
+      <i :class="isCollapsed ? 'bx bx-menu' : 'bx bx-x'"></i>
+    </button>
+
     <!-- Logo -->
-    <div class="logo">RecipeDorm</div>
+    <div class="logo" v-if="!isCollapsed">RecipeDorm</div>
 
     <!-- Search Bar -->
-    <div class="search-bar">
+    <div class="search-bar" v-if="!isCollapsed">
       <input
         type="text"
         v-model="searchQuery"
@@ -15,63 +20,139 @@
 
     <!-- Navigation Buttons -->
     <div class="nav-buttons">
-      <button class="add-recipe-btn" @click="addRecipe">+ Add Recipe</button>
-      <div class="profile" @click="logout">
-        <img src="@/assets/lapo.jpg" alt="Profile" class="profile-pic" />
+      <button class="add-recipe-btn" @click="addRecipe" v-if="!isCollapsed">
+        + Add Recipe
+      </button>
+
+      <div class="nav-links">
+        <button @click="bookmarkRecipes" :title="'Bookmark'">
+          <i class="bx bxs-bookmark"></i>
+          <span v-if="!isCollapsed">saved Recipes</span>
+        </button>
+        <button @click="myRecipes" :title="'myRecipes'">
+          <i class='bx bxs-folder'></i> <span v-if="!isCollapsed">My recipes</span>
+        </button>
+        <button @click="settings" :title="'settings'">
+          <i class="bx bxs-cog"></i> <span v-if="!isCollapsed">settings</span>
+        </button>
+        <button @click="logout" :title="'Logout'">
+          <i class="bx bx-log-out"></i> <span v-if="!isCollapsed">Logout</span>
+        </button>
       </div>
+
+      <!-- Profile Section -->
+      <!-- <div class="profile-wrapper">
+        <div class="profile" @click="toggleDropdown">
+           <img src="@/assets/lapo.jpg" alt="Profile" class="profile-pic" /> -->
+      <!-- </div>  -->
+
+      <!-- <div v-if="showDropdown" class="dropdown-menu">
+          <ul>
+            <li @click="bookmarkRecipes">📌 Bookmark</li>
+            <li @click="likedRecipes">❤️ Liked</li>
+            <li @click="logout">🚪 Logout</li>
+          </ul>
+        </div> -->
+      <!-- </div> -->
     </div>
-  </nav>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-const router = useRouter()
 
+const router = useRouter()
 const searchQuery = ref('')
+const showDropdown = ref(false)
+const isCollapsed = ref(false)
+
+const toggleSidebar = () => {
+  isCollapsed.value = !isCollapsed.value
+}
 
 const searchRecipes = () => {
   console.log('Searching for:', searchQuery.value)
 }
 
 const addRecipe = () => {
-  console.log('Navigating to add recipe page')
   router.push('/addRecipes')
 }
 
+const bookmarkRecipes = () => {
+  router.push('/bookmarks')
+}
+
+const myRecipes = () => {
+  router.push('/myRecipes')
+}
+
+const settings = () => {
+  router.push('/settings')
+}
 const logout = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('username')
   router.push('/login')
 }
+
+const toggleDropdown = event => {
+  showDropdown.value = !showDropdown.value
+  event.stopPropagation()
+}
+
+const closeDropdown = () => {
+  showDropdown.value = false
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeDropdown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdown)
+})
 </script>
 
 <style scoped>
-/* Navbar Container */
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(to right, #3b2f2f, #705d5d);
-  padding: 12px 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
+.sidebar {
   position: fixed;
-  top: 0;
   left: 0;
-  z-index: 1000;
-  flex-wrap: wrap;
+  top: 0;
+  height: 100vh;
+  width: 250px;
+  background: linear-gradient(to bottom, #3b2f2f, #705d5d);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: width 0.3s ease-in-out;
+  z-index: 1;
+  box-shadow: 0px 12px 20px black;
 }
 
-/* Logo Styling */
+.sidebar.collapsed {
+  width: 80px;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-bottom: 20px;
+}
+
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
-  font-family: 'poppins', Courier, monospace;
   color: white;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  margin-bottom: 20px;
 }
 
-/* Search Bar */
 .search-bar {
   display: flex;
   align-items: center;
@@ -79,106 +160,100 @@ const logout = () => {
   padding: 5px 10px;
   border-radius: 20px;
   backdrop-filter: blur(10px);
-  flex-grow: 1;
-  max-width: 400px;
+  width: 100%;
+  margin-bottom: 50px;
 }
 
 .search-bar input {
-  padding: 10px;
   border: none;
   background: transparent;
   outline: none;
   color: white;
-  font-size: 1rem;
   width: 100%;
 }
 
-.search-bar input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.search-bar button {
-  background-color: transparent;
-  border: none;
-  color: white;
-  display: flex;
-  transition: 0.5s ease;
-  cursor: pointer;
-}
-
-.search-bar button:hover {
-  transform: scale(1.2);
-}
-
-/* Navigation Buttons */
 .nav-buttons {
   display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
   align-items: center;
-  gap: 10px;
 }
 
-/* Add Recipe Button */
+.nav-links button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 10px;
+  text-align: left;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  transition: 0.3s background;
+}
+.nav-links button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.nav-links span {
+  margin-left: 10px;
+}
+
 .add-recipe-btn {
   background: white;
-  padding: 10px 15px;
+  padding: 10px;
   border: none;
   border-radius: 20px;
   cursor: pointer;
   font-weight: bold;
-  font-size: 1rem;
-  transition: 0.3s ease-in-out;
   color: #705d5d;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
-.add-recipe-btn:hover {
-  background: #ab9090;
-  color: white;
-  transform: scale(1.05);
+.profile-wrapper {
+  position: relative;
+  cursor: pointer;
+  margin-top: auto;
 }
 
-/* Profile Picture */
 .profile {
   width: 40px;
   height: 40px;
-  overflow: hidden;
   border-radius: 50%;
   border: 2px solid white;
-  cursor: pointer;
 }
 
 .profile-pic {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: 0.3s ease-in-out;
 }
 
-.profile-pic:hover {
-  transform: scale(1.1);
+.dropdown-menu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  width: 150px;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    align-items: center;
-    padding: 8px;
-  }
+.dropdown-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
-  .search-bar {
-    width: 100%;
-    margin: 10px 0;
-  }
+.dropdown-menu li {
+  padding: 10px;
+  cursor: pointer;
+}
 
-  .nav-buttons {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .add-recipe-btn {
-    width: 100%;
-    text-align: center;
-  }
+.dropdown-menu li:hover {
+  background: #705d5d;
+  color: white;
 }
 </style>

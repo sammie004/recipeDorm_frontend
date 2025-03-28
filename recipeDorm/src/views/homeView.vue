@@ -1,4 +1,5 @@
 <template>
+  <p class="user">welcome, <span class="username"></span></p>
   <div class="recipe-container" @click="goToDetails">
     <RecipeCard
       v-for="(recipe, index) in recipes"
@@ -15,6 +16,7 @@
 import RecipeCard from '@/components/cards.vue'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
+import { onMounted } from 'vue'
 const router = useRouter()
 
 // Sample Recipe Data – updated to use valid Unsplash source links
@@ -76,6 +78,11 @@ const goToDetails = () => {
   console.log('Navigating to recipe details')
   route
 }
+onMounted(() => {
+  const username = document.querySelector('.username')
+  const user = localStorage.getItem('username')
+  username.innerHTML = user
+})
 </script>
 
 <style scoped>
@@ -83,14 +90,19 @@ const goToDetails = () => {
   width: 100%;
   height: auto; /* Prevents excessive height */
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Responsive columns */
+  grid-template-columns: repeat(3, 1fr); /* Responsive columns */
   gap: 15px; /* Controls spacing between cards */
   justify-content: center;
   position: relative;
-  top: 8%;
-  left: 2%;
+  top: -5%;
+  left: 22%;
 }
-
+.user {
+  position: relative;
+  left: 19%;
+  font-size: 1.5rem;
+  color: black;
+}
 .header {
   position: absolute;
   top: 20%;

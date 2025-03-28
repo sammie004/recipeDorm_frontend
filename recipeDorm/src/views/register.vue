@@ -58,7 +58,9 @@
         </div>
 
         <!-- Sign Up Button -->
-        <button type="submit" class="register-btn">Sign Up</button>
+        <button type="submit" class="register-btn" @click="handleRegister">
+          Sign Up
+        </button>
 
         <p class="continue">or</p>
 
@@ -79,6 +81,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 // Reactive form data
 const formData = ref({
@@ -91,22 +97,82 @@ const formData = ref({
 // Error state for name validation
 const nameError = ref(false)
 
-// Handle user registration
-const handleRegister = () => {
+const passwordRegex =
+  /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+
+const handleRegister = async () => {
   nameError.value = false
 
   if (formData.value.userName.includes(' ')) {
     nameError.value = true
     return
   }
+
+  if (!passwordRegex.test(formData.value.password)) {
+    alert(
+      'Password must be at least 8 characters long and include at least one uppercase letter, one number, and one special character.'
+    )
+    return
+  }
+  if (formData.value.password !== formData.value.confirmPassword) {
+    alert(`the passwords dont match`)
+    return
+  }
+
+  try {
+    const response = await fetch(
+      'https://recipedormapi20250315070938.azurewebsites.net/api/Auth/register',
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData.value)
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      console.error('Registration failed:', data)
+      alert(`Error: ${data.message} \n${data.errors?.join('\n') || ''}`)
+      return
+    }
+
+    console.log('Registration successful:', data)
+    alert('Registration successful!')
+  } catch (error) {
+    console.error('Network error:', error)
+    alert('Network error. Please try again.')
+  }
 }
 
-// Handle Google authentication
-const handleGoogleRegister = () => {
-  console.log('Redirecting to Google Authentication...')
-  window.location.href =
-    'https://recipedormapi20250315070938.azurewebsites.net/api/auth/google-sign-in'
-}
+onMounted(async () => {
+  const token = route.query.token // Get token from URL
+
+  if (token) {
+    try {
+      const response = await fetch(
+        'https://recipedormapi20250315070938.azurewebsites.net/api/auth/user',
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      )
+
+      if (!response.ok) throw new Error('Failed to fetch user data')
+
+      user.value = await response.json()
+      console.log('User Info:', user.value)
+
+      localStorage.setItem('user', JSON.stringify(user.value)) // Save user data
+    } catch (error) {
+      console.error('Error fetching user info:', error)
+    }
+  } else {
+    console.warn('No token found in URL')
+  }
+})
 </script>
 
 <style scoped>

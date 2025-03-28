@@ -27,7 +27,9 @@
           />
         </div>
 
-        <button type="submit" class="login-btn">Sign In</button>
+        <button type="submit" class="login-btn" @click="handleLogin">
+          Sign In
+        </button>
         <p class="continue">or</p>
 
         <button class="google-btn" @click="handleGoogleLogin">
@@ -47,26 +49,43 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const email = ref('')
 const password = ref('')
+const router = useRouter()
 
-const handleLogin = () => {
-  if (!email.value || !password.value) {
-    alert('Please enter both email and password.')
-    return
+const handleLogin = async () => {
+  const formData = {
+    email: email.value,
+    password: password.value
   }
-  console.log('Logging in with:', email.value, password.value)
-  router.push('/home')
-}
 
-const handleGoogleLogin = () => {
-  console.log('Redirecting to Google Authentication...')
-  window.location.href =
-    'https://recipedormapi20250315070938.azurewebsites.net/api/auth/google-sign-in'
+  try {
+    const response = await fetch(
+      'https://recipedormapi20250315070938.azurewebsites.net/api/Auth/sign-in',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      }
+    )
+
+    const data = await response.json()
+
+    if (response.ok) {
+      console.log('Login successful')
+      localStorage.setItem('username', data.username)
+      localStorage.setItem('token', data.token)
+      router.push('/home')
+    } else {
+      console.error('Login failed:', data.message || 'Invalid credentials')
+    }
+  } catch (error) {
+    console.error('Error during login:', error)
+  }
 }
 </script>
-
 <style scoped>
 /* Center the login box */
 .login-container {
