@@ -1,6 +1,6 @@
 <template>
   <p class="user">
-    Welcome, <span class="username">{{ username }}</span>
+    Welcome Back, <span class="username">{{ username }}</span>
   </p>
 
   <!-- Filter Section -->

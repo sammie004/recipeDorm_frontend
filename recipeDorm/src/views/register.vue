@@ -58,9 +58,7 @@
         </div>
 
         <!-- Sign Up Button -->
-        <button type="submit" class="register-btn" @click="handleRegister">
-          Sign Up
-        </button>
+        <button type="submit" class="register-btn">Sign Up</button>
 
         <p class="continue">or</p>
 
@@ -76,14 +74,22 @@
         <router-link to="/login" class="login-link">Sign In</router-link>
       </p>
     </div>
+
+    <!-- Modal Popup -->
+    <div v-if="showModal" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <p>{{ modalMessage }}</p>
+        <button @click="closeModal">Close</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
+const router = useRouter()
 const route = useRoute()
 
 // Reactive form data
@@ -93,10 +99,11 @@ const formData = ref({
   password: '',
   confirmPassword: ''
 })
-
-// Error state for name validation
 const nameError = ref(false)
+const showModal = ref(false)
+const modalMessage = ref('')
 
+// Regex for password validation
 const passwordRegex =
   /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 
@@ -109,13 +116,14 @@ const handleRegister = async () => {
   }
 
   if (!passwordRegex.test(formData.value.password)) {
-    alert(
+    showModal.value = true
+    modalMessage.value =
       'Password must be at least 8 characters long and include at least one uppercase letter, one number, and one special character.'
-    )
     return
   }
   if (formData.value.password !== formData.value.confirmPassword) {
-    alert(`the passwords dont match`)
+    showModal.value = true
+    modalMessage.value = "The passwords don't match."
     return
   }
 
@@ -131,26 +139,35 @@ const handleRegister = async () => {
         body: JSON.stringify(formData.value)
       }
     )
-
     const data = await response.json()
-
     if (!response.ok) {
-      console.error('Registration failed:', data)
-      alert(`Error: ${data.message} \n${data.errors?.join('\n') || ''}`)
+      showModal.value = true
+      modalMessage.value =
+        data.message || 'Registration failed. Account may already exist.'
       return
     }
-
-    console.log('Registration successful:', data)
-    alert('Registration successful!')
+    showModal.value = true
+    modalMessage.value = 'Registration successful! Please log in.'
   } catch (error) {
-    console.error('Network error:', error)
-    alert('Network error. Please try again.')
+    showModal.value = true
+    modalMessage.value = 'Network error. Please try again.'
+  }
+}
+
+const handleGoogleRegister = () => {
+  window.location.href =
+    'https://recipedormapi20250315070938.azurewebsites.net/api/auth/google-sign-in'
+}
+
+const closeModal = () => {
+  showModal.value = false
+  if (modalMessage.value.includes('successful')) {
+    router.push('/login')
   }
 }
 
 onMounted(async () => {
-  const token = route.query.token // Get token from URL
-
+  const token = route.query.token // Get token from URL if any
   if (token) {
     try {
       const response = await fetch(
@@ -159,37 +176,29 @@ onMounted(async () => {
           headers: { Authorization: `Bearer ${token}` }
         }
       )
-
       if (!response.ok) throw new Error('Failed to fetch user data')
-
-      user.value = await response.json()
-      console.log('User Info:', user.value)
-
-      localStorage.setItem('user', JSON.stringify(user.value)) // Save user data
+      const userData = await response.json()
+      console.log('User Info:', userData)
+      localStorage.setItem('user', JSON.stringify(userData))
     } catch (error) {
       console.error('Error fetching user info:', error)
     }
-  } else {
-    console.warn('No token found in URL')
   }
 })
 </script>
 
 <style scoped>
-/* Ensure container is centered and scales well */
 .register-container {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  top: 10%;
-  /* left: 35%; */
   background: white;
+  position: relative;
+  top: 15%;
   padding: 20px;
 }
 
-/* Register Box */
 .register-box {
   background: #fff;
   padding: 2rem;
@@ -201,7 +210,6 @@ onMounted(async () => {
   border: 1px solid black;
 }
 
-/* Header Text */
 h2 {
   color: #333;
   font-size: 1.8rem;
@@ -213,7 +221,6 @@ p {
   margin-bottom: 20px;
 }
 
-/* Input Fields */
 .input-group {
   margin-bottom: 15px;
   text-align: left;
@@ -240,7 +247,6 @@ p {
   box-shadow: 0 0 5px rgba(255, 126, 95, 0.5);
 }
 
-/* Error Message */
 .error-msg {
   color: red;
   font-size: 0.85rem;
@@ -251,7 +257,6 @@ p {
   border-color: red !important;
 }
 
-/* Register Button */
 .register-btn {
   width: 100%;
   padding: 12px;
@@ -269,12 +274,11 @@ p {
   transform: scale(1.05);
 }
 
-/* Google Button */
 .google-btn {
   width: 100%;
   padding: 12px;
   border: 1px solid #ccc;
-  background: #fff;
+  background: white;
   color: #333;
   border-radius: 8px;
   font-size: 1rem;
@@ -287,11 +291,10 @@ p {
 }
 
 .google-btn:hover {
-  background: #f1f1f1;
+  background: #f0f0f0;
   transform: scale(1.05);
 }
 
-/* Login Redirect */
 .login-text {
   margin-top: 15px;
   color: #333;
@@ -306,26 +309,105 @@ p {
   text-decoration: underline;
 }
 
-/* RESPONSIVE DESIGN */
-@media (max-width: 600px) {
-  .register-box {
-    padding: 1.5rem;
-    width: 100%;
-  }
+/* Modal Popup Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
 
+.modal-content {
+  width: 300px;
+  background: linear-gradient(135deg, #ffffff, #f7f7f7);
+  padding: 25px 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-content p {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.modal-content button {
+  margin-top: 15px;
+  padding: 8px 16px;
+  border: none;
+  background: #705d5d;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.modal-content button:hover {
+  background: #ab9090;
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+  .register-box {
+    max-width: 90%;
+    padding: 1.5rem;
+  }
   h2 {
     font-size: 1.5rem;
   }
-
   .input-group input {
     padding: 10px;
     font-size: 0.9rem;
   }
-
   .register-btn,
   .google-btn {
     padding: 10px;
     font-size: 0.9rem;
   }
+}
+
+@media (max-width: 480px) {
+  .register-box {
+    padding: 1rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+  }
+  .input-group input {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+  .register-btn,
+  .google-btn {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+}
+</style>
+
+<style>
+body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 </style>
