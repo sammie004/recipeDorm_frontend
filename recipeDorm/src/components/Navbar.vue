@@ -56,7 +56,7 @@ const goToSearch = () => {
 }
 
 const bookmarkRecipes = () => {
-  router.push('/bookmarks')
+  router.push('/bookmark')
 }
 
 const myRecipes = () => {

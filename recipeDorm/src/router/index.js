@@ -10,6 +10,7 @@ import home from '../views/home.vue';
 import settings from '../views/settings.vue';
 import SearchPage from '../views/searchPage.vue';
 import myRecipes from '../views/myRecipe.vue'
+import bookmark from '../views/bookmark.vue'
 
 const routes = [
   { path: '/', component: home, name: 'homePage' },
@@ -22,7 +23,8 @@ const routes = [
   { path: '/addRecipes', component: addRecipes, name: 'addRecipes', meta: { requiresAuth: true } },
   { path: '/settings', component: settings, name: 'settings', meta: { requiresAuth: true } },
   { path: '/recipeDetails/:id', component: recipeDetails, name: 'recipeDetails', meta: { requiresAuth: true } },
-  { path: '/myRecipes', component: myRecipes, name: 'myRecipes', meta: { requiresAuth: true } }
+  { path: '/myRecipes', component: myRecipes, name: 'myRecipes', meta: { requiresAuth: true } },
+  { path: '/bookmark', component: bookmark, name: 'bookmark', meta: { requiresAuth: true } }
 
 ];
 
