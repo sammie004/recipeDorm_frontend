@@ -1,5 +1,5 @@
 <template>
-  <div class="recipe-card" @click="goToDetails">
+  <div class="recipe-card" @click="goToDetails(id)">
     <img :src="image" :alt="title" class="recipe-image" />
 
     <div class="recipe-content">
@@ -9,49 +9,109 @@
 
     <div class="recipe-actions">
       <button class="icon-btn" @click.stop="toggleBookmark">
-        <i :class="isBookmarked ? 'bx bx-bookmark' : 'bx bx-bookmark-alt'"></i>
+        <i :class="isBookmarked ? 'bx bxs-bookmark' : 'bx bx-bookmark-alt'"></i>
       </button>
       <button class="icon-btn" @click.stop="toggleLike">
         <i
-          :class="isLiked ? 'bx bx-heart' : 'bx bx-heart'"
+          :class="isLiked ? 'bx bxs-heart' : 'bx bx-heart'"
           :style="{ color: isLiked ? 'red' : '#666' }"
         ></i>
       </button>
-      <button class="icon-btn" @click.stop="goToDetails">
-        <i class="bx bx-dots-horizontal-rounded"></i>
+      <button class="icon-btn" @click.stop="goToDetails(id)">
+        <i class="bx bx-share-alt"></i>
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  id: String, // using String as recipeId is a UUID string
+  id: String,
   title: String,
   description: String,
   image: String
 })
 
 const router = useRouter()
-
 const isBookmarked = ref(false)
 const isLiked = ref(false)
 
+// Load like state from localStorage on mount
+onMounted(() => {
+  const likedRecipes = JSON.parse(localStorage.getItem('likedRecipes')) || {}
+  isLiked.value = likedRecipes[props.id] || false
+})
+
+// Toggle bookmark state
 const toggleBookmark = () => {
   isBookmarked.value = !isBookmarked.value
 }
 
-const toggleLike = () => {
-  isLiked.value = !isLiked.value
+// API call to like/unlike recipe and store in localStorage
+const toggleLike = async () => {
+  try {
+    const storedToken = localStorage.getItem('token')
+    if (!storedToken) {
+      console.error('No auth token found. Please log in.')
+      return
+    }
+
+    if (!props.id) {
+      console.error('Invalid recipe ID:', props.id)
+      return
+    }
+
+    console.log('Sending like request for Recipe ID:', props.id)
+
+    const response = await fetch(
+      `https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/like`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${storedToken}`
+        },
+        body: JSON.stringify({ recipeId: props.id })
+      }
+    )
+
+    const responseText = await response.text()
+    console.log('Raw Response:', responseText)
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to like recipe: ${response.status} - ${responseText}`
+      )
+    }
+
+    const data = JSON.parse(responseText)
+    if (typeof data.liked === 'boolean') {
+      isLiked.value = data.liked
+    } else {
+      isLiked.value = !isLiked.value
+    }
+
+    // Store like state in localStorage
+    const likedRecipes = JSON.parse(localStorage.getItem('likedRecipes')) || {}
+    likedRecipes[props.id] = isLiked.value
+    localStorage.setItem('likedRecipes', JSON.stringify(likedRecipes))
+
+    console.log('Like state updated:', isLiked.value)
+  } catch (error) {
+    console.error('Error liking the recipe:', error)
+  }
 }
 
-const goToDetails = () => {
-  router.push({ name: 'RecipeDetails', params: { id: props.id } })
+// Navigate to details page
+const goToDetails = id => {
+  console.log('Navigating to RecipeDetails with ID:', id)
+  router.push({ name: 'recipeDetails', params: { id } })
 }
 
+// Shorten description for preview
 const shortDescription = computed(() => {
   if (!props.description) return ''
   const words = props.description.split(' ')
@@ -70,13 +130,13 @@ const shortDescription = computed(() => {
   background: hsl(0, 17%, 90%);
   border-radius: 12px;
   overflow: hidden;
-  width: 300px; /* Consistent width */
-  height: 300px; /* Consistent height */
+  width: 300px;
+  height: 300px;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1.3rem; /* Adjust spacing */
+  margin-bottom: 1.3rem;
 }
 
 /* Hover Effect */
@@ -88,7 +148,7 @@ const shortDescription = computed(() => {
 /* IMAGE */
 .recipe-image {
   width: 100%;
-  height: 100px; /* Fixed image height */
+  height: 100px;
   object-fit: cover;
   transition: 0.5s;
 }

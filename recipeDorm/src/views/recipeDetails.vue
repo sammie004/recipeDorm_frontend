@@ -1,91 +1,158 @@
 <template>
   <div class="recipe-details">
-    <button @click="$router.back()" class="back-btn">← Back</button>
-    <img :src="recipe.image" :alt="recipe.title" class="recipe-image" />
-    <h1>{{ recipe.title }}</h1>
-    <p>{{ recipe.description }}</p>
+    <div v-if="loading" class="loading">Loading recipe details...</div>
+    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else-if="recipeData" class="content">
+      <h1 class="title">{{ recipeData.recipeDetails.title }}</h1>
+      <img
+        :src="recipeData.recipeDetails.imageUrl"
+        alt="Recipe Image"
+        class="recipe-image"
+      />
+      <p class="description">{{ recipeData.recipeDetails.description }}</p>
 
-    <h2>Ingredients</h2>
-    <ul>
-      <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
-        {{ ingredient }}
-      </li>
-    </ul>
+      <div class="section">
+        <h2>Ingredients</h2>
+        <ul class="ingredients">
+          <li
+            v-for="ingredient in recipeData.ingredients"
+            :key="ingredient.name"
+          >
+            <span class="quantity">{{ ingredient.quantity }}</span>
+            <span class="name">{{ ingredient.name }}</span>
+          </li>
+        </ul>
+      </div>
 
-    <h2>Steps</h2>
-    <ol>
-      <li v-for="(step, index) in recipe.steps" :key="index">
-        {{ step }}
-      </li>
-    </ol>
+      <div class="section">
+        <h2>Instructions</h2>
+        <ol class="steps">
+          <li v-for="step in recipeData.steps" :key="step.stepNumber">
+            <strong>Step {{ step.stepNumber }}:</strong> {{ step.description }}
+          </li>
+        </ol>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const recipes = ref([
-  {
-    title: 'Spaghetti Carbonara',
-    description: 'A creamy Italian pasta dish with bacon and cheese.',
-    image: '/recipeDorm/src/assets/spaghetti-carbonara.jpg',
-    ingredients: [
-      'Spaghetti',
-      'Eggs',
-      'Parmesan Cheese',
-      'Bacon',
-      'Black Pepper'
-    ],
-    steps: [
-      'Boil pasta',
-      'Fry bacon',
-      'Mix eggs and cheese',
-      'Combine everything'
-    ]
-  },
-  {
-    title: 'Classic Margherita Pizza',
-    description: 'Tomato sauce, fresh basil, and mozzarella cheese.',
-    image: 'https://source.unsplash.com/400x300/?pizza',
-    ingredients: [
-      'Pizza Dough',
-      'Tomato Sauce',
-      'Mozzarella',
-      'Basil',
-      'Olive Oil'
-    ],
-    steps: [
-      'Roll dough',
-      'Spread sauce',
-      'Add cheese and basil',
-      'Bake in oven'
-    ]
-  }
-])
+const recipeData = ref(null)
+const loading = ref(false)
+const error = ref(null)
 
-const recipe = computed(() => recipes.value[route.params.id])
+onMounted(async () => {
+  try {
+    const id = route.params.id
+    loading.value = true
+    console.log('Fetching recipe with ID:', id)
+
+    const token = localStorage.getItem('token')
+    const response = await fetch(
+      `https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/get-recipe-by-id?RecipeId=${id}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+    if (!response.ok) {
+      const errText = await response.text()
+      throw new Error(`Error ${response.status}: ${errText}`)
+    }
+    const data = await response.json()
+    recipeData.value = data.data
+  } catch (err) {
+    error.value = err.message
+    console.error('Failed to fetch recipe:', err)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <style scoped>
 .recipe-details {
-  max-width: 600px;
-  margin: 20px auto;
+  width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fdfdfd;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
   text-align: center;
+  color: #3b2f2f;
 }
 
 .recipe-image {
-  width: 100%;
+  width: 55vw;
+  height: 60vh;
   border-radius: 10px;
+  object-fit: cover;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: 0.5s;
+  position: relative;
+  left: 20%;
+  margin-bottom: 80px;
+}
+.recipe-image:hover {
+  transform: scale(1.15);
 }
 
-.back-btn {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
+.description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  text-align: justify;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: #705d5d;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 5px;
+}
+
+.ingredients,
+.steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ingredients li,
+.steps li {
   margin-bottom: 10px;
-  color: #007bff;
+  font-size: 1.1rem;
+}
+
+.ingredients li .quantity {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.loading,
+.error {
+  text-align: center;
+  font-size: 1.3rem;
+  margin-top: 40px;
 }
 </style>

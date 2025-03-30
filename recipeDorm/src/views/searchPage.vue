@@ -1,5 +1,4 @@
 <template>
-  <!-- <AddrecipesNav :username="username" /> -->
   <navbar />
 
   <div class="search-container">
@@ -32,6 +31,7 @@
         :title="recipe.title"
         :description="recipe.description"
         :image="recipe.imageUrl"
+        @click="goToDetails(recipe.recipeId)"
       />
     </div>
 
@@ -44,17 +44,17 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import AddrecipesNav from '@/components/addrecipesNav.vue'
 import Navbar from '@/components/Navbar.vue'
 import RecipeCard from '@/components/cards.vue'
 import Typed from 'typed.js'
+import { useRouter } from 'vue-router'
 
-const query = ref('rice')
+const router = useRouter()
+const query = ref('')
 const recipes = ref([])
 const loading = ref(false)
 const error = ref(null)
 const title = ref(null)
-const username = ref('')
 const loadingMessage = ref('🔄 Mixing ingredients...')
 
 const messages = [
@@ -94,12 +94,10 @@ const fetchRecipes = async () => {
         }
       }
     )
-
     if (!response.ok) {
       const errorText = await response.text()
       throw new Error(`Error ${response.status}: ${errorText}`)
     }
-
     const data = await response.json()
     recipes.value = data.data?.data || []
   } catch (err) {
@@ -112,6 +110,11 @@ const fetchRecipes = async () => {
 
 const search = () => {
   fetchRecipes()
+}
+
+const goToDetails = id => {
+  console.log('Navigating to RecipeDetails with ID:', id)
+  router.push({ name: 'recipeDetails', params: { id } })
 }
 
 onMounted(() => {
@@ -195,7 +198,6 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-  /* position: absolute; */
 }
 
 .loading {
@@ -238,5 +240,13 @@ onMounted(() => {
 .error {
   font-size: 1.5rem;
   color: black;
+}
+</style>
+
+<style>
+body {
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
 }
 </style>
