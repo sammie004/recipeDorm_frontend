@@ -1,31 +1,3 @@
-<template>
-  <div class="recipe-card" @click="goToDetails(id)">
-    <img :src="image" :alt="title" class="recipe-image" />
-
-    <div class="recipe-content">
-      <h3 class="recipe-title">{{ title }}</h3>
-      <p class="recipe-description">{{ shortDescription }}</p>
-    </div>
-
-    <div class="recipe-actions">
-      <button class="icon-btn" @click.stop="toggleBookmark">
-        <i :class="isBookmarked ? 'bx bxs-bookmark' : 'bx bx-bookmark-alt'"></i>
-      </button>
-      <button class="icon-btn" @click.stop="toggleLike">
-        <i
-          :class="isLiked ? 'bx bxs-heart' : 'bx bx-heart'"
-          :style="{ color: isLiked ? 'red' : '#666' }"
-        ></i>
-        <!-- Reduced font-size for likes number -->
-        <span class="likes-count">{{ likesCount }}</span>
-      </button>
-      <button class="icon-btn" @click.stop="goToDetails(id)">
-        <i class="bx bx-share-alt"></i>
-      </button>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -36,13 +8,16 @@ const props = defineProps({
   description: String,
   image: String,
   isLikedByUser: Boolean,
-  likesCount: Number
+  likesCount: Number,
+  isBookmarkedByUser: Boolean // You can pass the initial bookmarked state
 })
 
 const router = useRouter()
-const isBookmarked = ref(false)
+
+// Create reactive state based on backend-provided props
 const isLiked = ref(props.isLikedByUser)
 const likesCount = ref(props.likesCount)
+const isBookmarked = ref(props.isBookmarkedByUser || false)
 
 // Fetch recipe details from backend on mount to ensure UI is in sync
 const fetchRecipeDetails = async () => {
@@ -74,6 +49,7 @@ const fetchRecipeDetails = async () => {
       const recipe = result.data.recipeDetails
       isLiked.value = recipe.isLikedByUser
       likesCount.value = recipe.likesCount
+      isBookmarked.value = recipe.isBookmarkedByUser // update bookmark state from backend if available
     } else {
       console.error('Invalid recipe data format:', result)
     }
@@ -86,12 +62,50 @@ onMounted(() => {
   fetchRecipeDetails()
 })
 
-// Toggle bookmark state
-const toggleBookmark = () => {
-  isBookmarked.value = !isBookmarked.value
+// Toggle bookmark state and call the bookmark API
+const toggleBookmark = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      console.error('No auth token found. Please log in.')
+      return
+    }
+    if (!props.id) {
+      console.error('Invalid recipe ID:', props.id)
+      return
+    }
+
+    console.log('Toggling bookmark for Recipe ID:', props.id)
+
+    // Optimistically update UI
+    isBookmarked.value = !isBookmarked.value
+
+    // Send the bookmark/unbookmark request to the backend
+    const response = await fetch(
+      'https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/bookmark-recipe',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ recipeId: props.id })
+      }
+    )
+    if (!response.ok) {
+      throw new Error(`Failed to bookmark recipe: ${response.status}`)
+    }
+    const result = await response.json()
+    console.log('Bookmark API response:', result)
+    // Optionally, update isBookmarked based on result if the API returns a specific field (e.g., result.bookmarked)
+  } catch (error) {
+    console.error('Error bookmarking the recipe:', error)
+    // Revert optimistic update on error
+    isBookmarked.value = !isBookmarked.value
+  }
 }
 
-// Toggle like state without local storage persistence
+// Toggle like state (unchanged from your existing code)
 const toggleLike = async () => {
   try {
     const token = localStorage.getItem('token')
@@ -106,7 +120,6 @@ const toggleLike = async () => {
 
     console.log('Toggling like for Recipe ID:', props.id)
 
-    // Optimistic UI update
     const newLikedState = !isLiked.value
     isLiked.value = newLikedState
     likesCount.value = newLikedState
@@ -154,6 +167,33 @@ const shortDescription = computed(() => {
     : words.slice(0, 5).join(' ') + '...'
 })
 </script>
+
+<template>
+  <div class="recipe-card" @click="goToDetails(id)">
+    <img :src="image" :alt="title" class="recipe-image" />
+
+    <div class="recipe-content">
+      <h3 class="recipe-title">{{ title }}</h3>
+      <p class="recipe-description">{{ shortDescription }}</p>
+    </div>
+
+    <div class="recipe-actions">
+      <button class="icon-btn" @click.stop="toggleBookmark">
+        <i :class="isBookmarked ? 'bx bxs-bookmark' : 'bx bx-bookmark-alt'"></i>
+      </button>
+      <button class="icon-btn" @click.stop="toggleLike">
+        <i
+          :class="isLiked ? 'bx bxs-heart' : 'bx bx-heart'"
+          :style="{ color: isLiked ? 'red' : '#666' }"
+        ></i>
+        <span class="likes-count">{{ likesCount }}</span>
+      </button>
+      <button class="icon-btn" @click.stop="goToDetails(id)">
+        <i class="bx bx-share-alt"></i>
+      </button>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 /* CARD CONTAINER */

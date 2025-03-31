@@ -128,6 +128,13 @@ const handleRegister = async () => {
   }
 
   try {
+    const payload = {
+      email: formData.value.email.trim(), // using trim() to remove extra spaces
+      userName: formData.value.userName.trim(), // exact key as expected
+      password: formData.value.password
+    }
+    console.log('Registration Payload:', payload)
+
     const response = await fetch(
       'https://recipedormapi20250315070938.azurewebsites.net/api/Auth/register',
       {
@@ -136,7 +143,7 @@ const handleRegister = async () => {
           Accept: 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData.value)
+        body: JSON.stringify(payload)
       }
     )
     const data = await response.json()
