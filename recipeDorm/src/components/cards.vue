@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, defineProps } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -9,17 +9,17 @@ const props = defineProps({
   image: String,
   isLikedByUser: Boolean,
   likesCount: Number,
-  isBookmarkedByUser: Boolean // You can pass the initial bookmarked state
+  isBookmarkedByUser: Boolean // initial bookmarked state
 })
 
 const router = useRouter()
 
-// Create reactive state based on backend-provided props
+// Reactive state based on props
 const isLiked = ref(props.isLikedByUser)
 const likesCount = ref(props.likesCount)
 const isBookmarked = ref(props.isBookmarkedByUser || false)
 
-// Fetch recipe details from backend on mount to ensure UI is in sync
+// Fetch recipe details from backend on mount
 const fetchRecipeDetails = async () => {
   try {
     if (!props.id) {
@@ -44,12 +44,11 @@ const fetchRecipeDetails = async () => {
     }
     const result = await response.json()
     console.log('Full API Response:', result)
-
     if (result && result.data && result.data.recipeDetails) {
       const recipe = result.data.recipeDetails
       isLiked.value = recipe.isLikedByUser
       likesCount.value = recipe.likesCount
-      isBookmarked.value = recipe.isBookmarkedByUser // update bookmark state from backend if available
+      isBookmarked.value = recipe.isBookmarkedByUser
     } else {
       console.error('Invalid recipe data format:', result)
     }
@@ -62,7 +61,7 @@ onMounted(() => {
   fetchRecipeDetails()
 })
 
-// Toggle bookmark state and call the bookmark API
+// Toggle bookmark function – checks state and calls the appropriate API.
 const toggleBookmark = async () => {
   try {
     const token = localStorage.getItem('token')
@@ -74,38 +73,77 @@ const toggleBookmark = async () => {
       console.error('Invalid recipe ID:', props.id)
       return
     }
+    console.log(
+      'Toggling bookmark for Recipe ID:',
+      props.id,
+      'Current state:',
+      isBookmarked.value
+    )
 
-    console.log('Toggling bookmark for Recipe ID:', props.id)
-
-    // Optimistically update UI
-    isBookmarked.value = !isBookmarked.value
-
-    // Send the bookmark/unbookmark request to the backend
-    const response = await fetch(
-      'https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/bookmark-recipe',
-      {
-        method: 'POST',
+    if (isBookmarked.value) {
+      // Recipe is bookmarked → remove it.
+      const url = `https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/remove-bookmark?RecipeId=${props.id}`
+      console.log('Calling remove bookmark API:', url)
+      const response = await fetch(url, {
+        method: 'DELETE', // Use DELETE as specified by your API
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ recipeId: props.id })
+        }
+      })
+      if (!response.ok) {
+        const errData = await response.json()
+        console.error(`Failed to remove bookmark: ${response.status}`, errData)
+        throw new Error(`Failed to remove bookmark: ${response.status}`)
       }
-    )
-    if (!response.ok) {
-      throw new Error(`Failed to bookmark recipe: ${response.status}`)
+      const result = await response.json()
+      console.log('Remove Bookmark API Response:', result)
+      if (
+        result.message &&
+        result.message.toLowerCase().includes('unbookmarked')
+      ) {
+        isBookmarked.value = false
+        console.log('Bookmark removed for Recipe ID:', props.id)
+      } else {
+        console.error('Unexpected remove bookmark response', result)
+      }
+    } else {
+      // Recipe is not bookmarked → add it.
+      const response = await fetch(
+        'https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/bookmark-recipe',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ recipeId: props.id })
+        }
+      )
+      if (!response.ok) {
+        const errData = await response.json()
+        console.error(`Failed to bookmark recipe: ${response.status}`, errData)
+        throw new Error(`Failed to bookmark recipe: ${response.status}`)
+      }
+      const result = await response.json()
+      console.log('Bookmark API Response:', result)
+      if (
+        result.message &&
+        result.message.toLowerCase().includes('bookmarked successfully')
+      ) {
+        isBookmarked.value = true
+        console.log('Bookmark added for Recipe ID:', props.id)
+      } else {
+        console.error('Unexpected bookmark API response', result)
+      }
     }
-    const result = await response.json()
-    console.log('Bookmark API response:', result)
-    // Optionally, update isBookmarked based on result if the API returns a specific field (e.g., result.bookmarked)
   } catch (error) {
-    console.error('Error bookmarking the recipe:', error)
-    // Revert optimistic update on error
+    console.error('Error toggling bookmark:', error)
+    // Optionally, revert state if needed.
     isBookmarked.value = !isBookmarked.value
   }
 }
 
-// Toggle like state (unchanged from your existing code)
 const toggleLike = async () => {
   try {
     const token = localStorage.getItem('token')
@@ -117,15 +155,12 @@ const toggleLike = async () => {
       console.error('Invalid recipe ID:', props.id)
       return
     }
-
     console.log('Toggling like for Recipe ID:', props.id)
-
     const newLikedState = !isLiked.value
     isLiked.value = newLikedState
     likesCount.value = newLikedState
       ? likesCount.value + 1
       : likesCount.value - 1
-
     const response = await fetch(
       `https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/like`,
       {
@@ -144,7 +179,6 @@ const toggleLike = async () => {
     console.log('Like API response:', result)
   } catch (error) {
     console.error('Error liking the recipe:', error)
-    // Revert optimistic update on error
     isLiked.value = !isLiked.value
     likesCount.value = isLiked.value
       ? likesCount.value + 1
@@ -152,13 +186,11 @@ const toggleLike = async () => {
   }
 }
 
-// Navigate to details page
 const goToDetails = id => {
   console.log('Navigating to RecipeDetails with ID:', id)
   router.push({ name: 'recipeDetails', params: { id } })
 }
 
-// Shorten description for preview
 const shortDescription = computed(() => {
   if (!props.description) return ''
   const words = props.description.split(' ')
@@ -194,6 +226,95 @@ const shortDescription = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* CARD CONTAINER */
+.recipe-card {
+  position: relative;
+  top: 40%;
+  left: -14%;
+  background: hsl(0, 17%, 90%);
+  border-radius: 12px;
+  overflow: hidden;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.3rem;
+}
+
+/* Hover Effect */
+.recipe-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* IMAGE */
+.recipe-image {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  transition: 0.5s;
+}
+.recipe-image:hover {
+  transform: scale(1.2);
+}
+
+/* CONTENT */
+.recipe-content {
+  padding: 15px;
+  text-align: center;
+  flex-grow: 1;
+}
+
+/* TITLE */
+.recipe-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* DESCRIPTION */
+.recipe-description {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* ACTION ICONS */
+.recipe-actions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #eee;
+  background: hsl(0, 11%, 25%);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: white;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.icon-btn:hover {
+  color: #ff6f61;
+  transform: scale(1.1);
+}
+
+/* New style for likes count: reduced size */
+.likes-count {
+  font-size: 0.8rem;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+}
+</style>
 
 <style scoped>
 /* CARD CONTAINER */

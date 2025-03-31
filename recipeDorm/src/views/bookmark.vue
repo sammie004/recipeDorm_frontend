@@ -2,19 +2,17 @@
   <Navbar />
   <div class="bookmark-page">
     <div class="content-wrapper">
-      <h1>Saved Recipes</h1>
-
-      <!-- Search Container with fixed height -->
-      <div class="search-container">
-        <input
-          v-model="searchQuery"
-          placeholder="Search bookmarks..."
-          aria-label="Search Bookmarks"
-          class="search-bar"
-        />
+      <div class="fixed-header">
+        <h1>Saved Recipes</h1>
+        <div class="search-container">
+          <input
+            v-model="searchQuery"
+            placeholder="Search bookmarks..."
+            aria-label="Search Bookmarks"
+            class="search-bar"
+          />
+        </div>
       </div>
-
-      <!-- Bookmark List -->
       <div class="bookmark-list">
         <p v-if="loading" class="loading-message">Loading bookmarks...</p>
         <div
@@ -27,8 +25,8 @@
             :title="recipe.title"
             :description="recipe.description"
             :image="recipe.imageUrl"
-            :isBookmarked="true"
-            @toggleBookmark="removeBookmark(recipe.recipeId)"
+            :isBookmarked="recipe.isBookmarkedByUser"
+            @toggleBookmark="toggleBookmark(recipe)"
           />
         </div>
         <p v-if="!loading && filteredBookmarks.length === 0" class="no-results">
@@ -39,70 +37,141 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted } from 'vue'
 import RecipeCard from '@/components/cards.vue'
 import Navbar from '@/components/Navbar.vue'
 
-export default {
-  components: {
-    RecipeCard,
-    Navbar
-  },
-  data () {
-    return {
-      searchQuery: '',
-      bookmarks: [], // Populated from the API
-      loading: true
-    }
-  },
-  computed: {
-    filteredBookmarks () {
-      return this.bookmarks.filter(recipe =>
-        recipe.title.toLowerCase().includes(this.searchQuery.toLowerCase())
-      )
-    }
-  },
-  methods: {
-    async fetchBookmarks () {
-      try {
-        const token = localStorage.getItem('token')
-        const response = await fetch(
-          'https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/get-my-bookmarked-recipes?PageNumber=1',
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: token ? `Bearer ${token}` : ''
-            }
-          }
-        )
+const searchQuery = ref('')
+const bookmarks = ref([]) // Fetched from API
+const loading = ref(true)
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch bookmarks: ${response.status}`)
+const filteredBookmarks = computed(() => {
+  return bookmarks.value.filter(recipe =>
+    recipe.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
+
+const fetchBookmarks = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    const response = await fetch(
+      'https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/get-my-bookmarked-recipes?PageNumber=1',
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : ''
         }
-
-        const result = await response.json()
-        console.log('Bookmarks API Response:', result)
-
-        if (result && result.data && Array.isArray(result.data.recipes)) {
-          this.bookmarks = result.data.recipes
-        } else {
-          console.error('Unexpected response format', result)
-        }
-      } catch (error) {
-        console.error('Error fetching bookmarks:', error)
-      } finally {
-        this.loading = false
       }
-    },
-    removeBookmark (id) {
-      this.bookmarks = this.bookmarks.filter(recipe => recipe.recipeId !== id)
+    )
+    if (!response.ok) {
+      throw new Error(`Failed to fetch bookmarks: ${response.status}`)
     }
-  },
-  mounted () {
-    this.fetchBookmarks()
+    const result = await response.json()
+    console.log('Bookmarks API Response:', result)
+    if (result && result.data && Array.isArray(result.data.recipes)) {
+      bookmarks.value = result.data.recipes.map(recipe => ({
+        ...recipe,
+        isBookmarkedByUser: true // Force bookmarked state
+      }))
+      console.log('Mapped bookmarks:', bookmarks.value)
+    } else {
+      console.error('Unexpected response format', result)
+    }
+  } catch (error) {
+    console.error('Error fetching bookmarks:', error)
+  } finally {
+    loading.value = false
   }
 }
+
+const toggleBookmark = async recipe => {
+  try {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      console.error('No auth token found. Please log in.')
+      return
+    }
+    if (!recipe.recipeId) {
+      console.error('Invalid recipe ID:', recipe.recipeId)
+      return
+    }
+
+    console.log(
+      'Toggling bookmark for recipe:',
+      recipe.recipeId,
+      'isBookmarkedByUser:',
+      recipe.isBookmarkedByUser
+    )
+
+    if (recipe.isBookmarkedByUser) {
+      // Call remove bookmark API
+      const url = `https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/remove-bookmark?RecipeId=${recipe.recipeId}`
+      console.log('Calling remove bookmark API:', url)
+      const response = await fetch(url, {
+        method: 'DELETE', // DELETE is expected
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if (!response.ok) {
+        const errData = await response.json()
+        console.error(`Failed to remove bookmark: ${response.status}`, errData)
+        throw new Error(`Failed to remove bookmark: ${response.status}`)
+      }
+      const result = await response.json()
+      console.log('Remove Bookmark API Response:', result)
+      if (
+        result.message &&
+        result.message.toLowerCase().includes('unbookmarked')
+      ) {
+        bookmarks.value = bookmarks.value.filter(
+          r => r.recipeId !== recipe.recipeId
+        )
+        console.log('Bookmark removed for recipe:', recipe.recipeId)
+      } else {
+        console.error('Unexpected remove bookmark response', result)
+      }
+    } else {
+      // Otherwise, call add bookmark API.
+      const response = await fetch(
+        'https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/bookmark-recipe',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ recipeId: recipe.recipeId })
+        }
+      )
+      if (!response.ok) {
+        const errData = await response.json()
+        console.error(`Failed to bookmark recipe: ${response.status}`, errData)
+        throw new Error(`Failed to bookmark recipe: ${response.status}`)
+      }
+      const result = await response.json()
+      console.log('Bookmark API Response:', result)
+      if (
+        result.message &&
+        result.message.toLowerCase().includes('bookmarked successfully')
+      ) {
+        recipe.isBookmarkedByUser = true
+        console.log('Bookmark added for recipe:', recipe.recipeId)
+      } else {
+        console.error('Unexpected bookmark API response', result)
+      }
+    }
+  } catch (error) {
+    console.error('Error toggling bookmark:', error)
+  }
+}
+
+onMounted(() => {
+  fetchBookmarks()
+})
 </script>
 
 <style scoped>
@@ -123,9 +192,9 @@ export default {
   max-width: 1400px;
   padding: 20px;
   box-sizing: border-box;
-  min-height: 700px; /* Reserve vertical space */
-  display: flex;
-  position: fixed;
+  min-height: 700px;
+  position: absolute;
+  top: 10%;
   flex-direction: column;
   align-items: center;
 }
@@ -141,7 +210,7 @@ h1 {
 .search-container {
   width: 100%;
   max-width: 500px;
-  height: 60px; /* Fixed height so layout doesn't shift */
+  height: 60px;
   display: flex;
   align-items: center;
   margin-bottom: 10px;
@@ -150,7 +219,7 @@ h1 {
 /* Search Bar */
 .search-bar {
   width: 100%;
-  height: 40px; /* Fixed height for input */
+  height: 40px;
   padding: 12px;
   text-align: center;
   border: 1px solid #4c4242;
@@ -158,7 +227,7 @@ h1 {
   box-sizing: border-box;
 }
 
-/* Bookmark List: Force three columns */
+/* Bookmark List: Force four columns */
 .bookmark-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -213,6 +282,9 @@ h1 {
 
 /* Small screens */
 @media (max-width: 600px) {
+  .fixed-header {
+    padding: 10px;
+  }
   h1 {
     font-size: 1.8rem;
   }
