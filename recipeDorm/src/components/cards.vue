@@ -16,6 +16,8 @@
           :class="isLiked ? 'bx bxs-heart' : 'bx bx-heart'"
           :style="{ color: isLiked ? 'red' : '#666' }"
         ></i>
+        <!-- Reduced font-size for likes number -->
+        <span class="likes-count">{{ likesCount }}</span>
       </button>
       <button class="icon-btn" @click.stop="goToDetails(id)">
         <i class="bx bx-share-alt"></i>
@@ -32,17 +34,56 @@ const props = defineProps({
   id: String,
   title: String,
   description: String,
-  image: String
+  image: String,
+  isLikedByUser: Boolean,
+  likesCount: Number
 })
 
 const router = useRouter()
 const isBookmarked = ref(false)
-const isLiked = ref(false)
+const isLiked = ref(props.isLikedByUser)
+const likesCount = ref(props.likesCount)
 
-// Load like state from localStorage on mount
+// Fetch recipe details from backend on mount to ensure UI is in sync
+const fetchRecipeDetails = async () => {
+  try {
+    if (!props.id) {
+      console.error('Recipe ID is missing. Cannot fetch details.')
+      return
+    }
+    const token = localStorage.getItem('token')
+    console.log('Fetching recipe details for ID:', props.id)
+
+    const response = await fetch(
+      `https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/get-recipe-by-id?RecipeId=${props.id}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+    if (!response.ok) {
+      throw new Error(`Failed to fetch recipe details: ${response.status}`)
+    }
+    const result = await response.json()
+    console.log('Full API Response:', result)
+
+    if (result && result.data && result.data.recipeDetails) {
+      const recipe = result.data.recipeDetails
+      isLiked.value = recipe.isLikedByUser
+      likesCount.value = recipe.likesCount
+    } else {
+      console.error('Invalid recipe data format:', result)
+    }
+  } catch (error) {
+    console.error('Error fetching recipe details:', error)
+  }
+}
+
 onMounted(() => {
-  const likedRecipes = JSON.parse(localStorage.getItem('likedRecipes')) || {}
-  isLiked.value = likedRecipes[props.id] || false
+  fetchRecipeDetails()
 })
 
 // Toggle bookmark state
@@ -50,21 +91,27 @@ const toggleBookmark = () => {
   isBookmarked.value = !isBookmarked.value
 }
 
-// API call to like/unlike recipe and store in localStorage
+// Toggle like state without local storage persistence
 const toggleLike = async () => {
   try {
-    const storedToken = localStorage.getItem('token')
-    if (!storedToken) {
+    const token = localStorage.getItem('token')
+    if (!token) {
       console.error('No auth token found. Please log in.')
       return
     }
-
     if (!props.id) {
       console.error('Invalid recipe ID:', props.id)
       return
     }
 
-    console.log('Sending like request for Recipe ID:', props.id)
+    console.log('Toggling like for Recipe ID:', props.id)
+
+    // Optimistic UI update
+    const newLikedState = !isLiked.value
+    isLiked.value = newLikedState
+    likesCount.value = newLikedState
+      ? likesCount.value + 1
+      : likesCount.value - 1
 
     const response = await fetch(
       `https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/like`,
@@ -72,36 +119,23 @@ const toggleLike = async () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${storedToken}`
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ recipeId: props.id })
       }
     )
-
-    const responseText = await response.text()
-    console.log('Raw Response:', responseText)
-
     if (!response.ok) {
-      throw new Error(
-        `Failed to like recipe: ${response.status} - ${responseText}`
-      )
+      throw new Error(`Failed to like recipe: ${response.status}`)
     }
-
-    const data = JSON.parse(responseText)
-    if (typeof data.liked === 'boolean') {
-      isLiked.value = data.liked
-    } else {
-      isLiked.value = !isLiked.value
-    }
-
-    // Store like state in localStorage
-    const likedRecipes = JSON.parse(localStorage.getItem('likedRecipes')) || {}
-    likedRecipes[props.id] = isLiked.value
-    localStorage.setItem('likedRecipes', JSON.stringify(likedRecipes))
-
-    console.log('Like state updated:', isLiked.value)
+    const result = await response.json()
+    console.log('Like API response:', result)
   } catch (error) {
     console.error('Error liking the recipe:', error)
+    // Revert optimistic update on error
+    isLiked.value = !isLiked.value
+    likesCount.value = isLiked.value
+      ? likesCount.value + 1
+      : likesCount.value - 1
   }
 }
 
@@ -155,6 +189,7 @@ const shortDescription = computed(() => {
 .recipe-image:hover {
   transform: scale(1.2);
 }
+
 /* CONTENT */
 .recipe-content {
   padding: 15px;
@@ -199,5 +234,12 @@ const shortDescription = computed(() => {
 .icon-btn:hover {
   color: #ff6f61;
   transform: scale(1.1);
+}
+
+/* New style for likes count: reduced size */
+.likes-count {
+  font-size: 0.8rem;
+  margin-left: 0.25rem;
+  vertical-align: middle;
 }
 </style>
