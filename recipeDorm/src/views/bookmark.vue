@@ -1,35 +1,40 @@
 <template>
   <Navbar />
   <div class="bookmark-page">
-    <h1>Saved Recipes</h1>
+    <div class="content-wrapper">
+      <h1>Saved Recipes</h1>
 
-    <!-- Search Bar -->
-    <input
-      v-model="searchQuery"
-      placeholder="Search bookmarks..."
-      aria-label="Search Bookmarks"
-      class="search-bar"
-    />
-
-    <!-- Bookmark List -->
-    <div class="bookmark-list">
-      <div
-        class="bookmark-item"
-        v-for="recipe in filteredBookmarks"
-        :key="recipe.recipeId"
-      >
-        <RecipeCard
-          :id="recipe.recipeId"
-          :title="recipe.title"
-          :description="recipe.description"
-          :image="recipe.imageUrl"
-          :isBookmarked="true"
-          @toggleBookmark="removeBookmark(recipe.recipeId)"
+      <!-- Search Container with fixed height -->
+      <div class="search-container">
+        <input
+          v-model="searchQuery"
+          placeholder="Search bookmarks..."
+          aria-label="Search Bookmarks"
+          class="search-bar"
         />
       </div>
-      <p v-if="filteredBookmarks.length === 0" class="no-results">
-        No recipes found.
-      </p>
+
+      <!-- Bookmark List -->
+      <div class="bookmark-list">
+        <p v-if="loading" class="loading-message">Loading bookmarks...</p>
+        <div
+          class="bookmark-item"
+          v-for="recipe in filteredBookmarks"
+          :key="recipe.recipeId"
+        >
+          <RecipeCard
+            :id="recipe.recipeId"
+            :title="recipe.title"
+            :description="recipe.description"
+            :image="recipe.imageUrl"
+            :isBookmarked="true"
+            @toggleBookmark="removeBookmark(recipe.recipeId)"
+          />
+        </div>
+        <p v-if="!loading && filteredBookmarks.length === 0" class="no-results">
+          No recipes found.
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -46,7 +51,8 @@ export default {
   data () {
     return {
       searchQuery: '',
-      bookmarks: [] // This will be populated from the API
+      bookmarks: [], // Populated from the API
+      loading: true
     }
   },
   computed: {
@@ -78,7 +84,6 @@ export default {
         const result = await response.json()
         console.log('Bookmarks API Response:', result)
 
-        // Adjust extraction based on API structure:
         if (result && result.data && Array.isArray(result.data.recipes)) {
           this.bookmarks = result.data.recipes
         } else {
@@ -86,6 +91,8 @@ export default {
         }
       } catch (error) {
         console.error('Error fetching bookmarks:', error)
+      } finally {
+        this.loading = false
       }
     },
     removeBookmark (id) {
@@ -99,16 +106,28 @@ export default {
 </script>
 
 <style scoped>
-/* Center the entire bookmarks page */
+/* Bookmark Page container */
 .bookmark-page {
   display: flex;
-  flex-direction: column;
-  justify-content: center; /* Vertical centering */
-  align-items: center; /* Horizontal centering */
-  padding: 20px;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
   background-color: #ffffff;
   box-sizing: border-box;
+  margin-left: 30px;
+}
+
+/* Content wrapper reserves space for the entire section */
+.content-wrapper {
+  width: 100%;
+  max-width: 1400px;
+  padding: 20px;
+  box-sizing: border-box;
+  min-height: 700px; /* Reserve vertical space */
+  display: flex;
+  position: fixed;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Title */
@@ -118,27 +137,47 @@ h1 {
   text-align: center;
 }
 
-/* Search Bar */
-.search-bar {
-  margin-bottom: 70px;
-  padding: 12px;
+/* Search Container with fixed height */
+.search-container {
   width: 100%;
   max-width: 500px;
+  height: 60px; /* Fixed height so layout doesn't shift */
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Search Bar */
+.search-bar {
+  width: 100%;
+  height: 40px; /* Fixed height for input */
+  padding: 12px;
   text-align: center;
   border: 1px solid #4c4242;
   border-radius: 8px;
   box-sizing: border-box;
 }
 
-/* Bookmark List: Centered grid */
+/* Bookmark List: Force three columns */
 .bookmark-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 40px;
   width: 100%;
   max-width: 1400px;
-  margin: 20px auto;
+  margin-left: 30px;
+  position: relative;
+  left: 7%;
+  margin: 20px auto 0 auto;
   box-sizing: border-box;
+  min-height: 300px;
+}
+
+/* Loading Message */
+.loading-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #777;
 }
 
 /* Bookmark Item */
@@ -180,7 +219,7 @@ h1 {
   .bookmark-list {
     grid-template-columns: 1fr;
   }
-  .search-bar {
+  .search-container {
     width: 90%;
   }
 }
