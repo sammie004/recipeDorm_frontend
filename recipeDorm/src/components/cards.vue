@@ -233,7 +233,7 @@ const shortDescription = computed(() => {
 </script>
 
 <template>
-  <div class="recipe-card" @click="goToDetails(id)">
+  <div class="recipe-card">
     <img :src="image" :alt="title" class="recipe-image" />
     <div class="recipe-content">
       <h3 class="recipe-title">{{ title }}</h3>
@@ -250,9 +250,24 @@ const shortDescription = computed(() => {
         ></i>
         <span class="likes-count">{{ likesCount }}</span>
       </button>
-      <button class="icon-btn" @click.stop="goToDetails(id)">
+      <button class="icon-btn" @click.stop="toggleShareModal">
         <i class="bx bx-share-alt"></i>
       </button>
+    </div>
+
+    <!-- Share Modal -->
+    <div v-if="showShareModal" class="modal-overlay" @click="toggleShareModal">
+      <div class="share-modal" @click.stop>
+        <h3>Share this Recipe</h3>
+        <button class="close-btn" @click="toggleShareModal">✖</button>
+
+        <div class="share-options">
+          <button @click="copyLink">Copy Link</button>
+          <button @click="shareOnSocial('facebook')">Facebook</button>
+          <button @click="shareOnSocial('twitter')">Twitter</button>
+          <button @click="shareOnSocial('whatsapp')">WhatsApp</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -343,5 +358,61 @@ const shortDescription = computed(() => {
   font-size: 0.8rem;
   margin-left: 0.25rem;
   vertical-align: middle;
+}
+/* Modal Background */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Modal Box */
+.share-modal {
+  background: white;
+  padding: 20px;
+  width: 300px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* Share Options */
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.share-options button {
+  background: #ff6f61;
+  border: none;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.share-options button:hover {
+  background: #ff5045;
 }
 </style>

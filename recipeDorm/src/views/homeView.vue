@@ -3,68 +3,75 @@
     Welcome Back, <span class="username">{{ username }}</span>
   </p>
 
-  <!-- Filter Section -->
-  <div class="filter" @click.stop>
-    <!-- Cuisine Filter -->
-    <div class="filter-main" @click.stop="toggleDropdown('cuisine')">
-      Filter by Cuisine <i class="bx bxs-down-arrow"></i>
-      <ul v-if="activeDropdown === 'cuisine'" class="dropdown">
-        <li @click.stop="selectFilter('cuisine', 'French')">French</li>
-        <li @click.stop="selectFilter('cuisine', 'Spanish')">Spanish</li>
-        <li @click.stop="selectFilter('cuisine', 'Italian')">Italian</li>
-        <li @click.stop="selectFilter('cuisine', 'Nigerian')">Nigerian</li>
-      </ul>
-    </div>
-
-    <!-- Diet Filter -->
-    <div class="filter-main" @click.stop="toggleDropdown('diet')">
-      Filter by Diet <i class="bx bxs-down-arrow"></i>
-      <ul v-if="activeDropdown === 'diet'" class="dropdown">
-        <li @click.stop="selectFilter('diet', 'Vegetarian')">Vegetarian</li>
-        <li @click.stop="selectFilter('diet', 'Vegan')">Vegan</li>
-        <li @click.stop="selectFilter('diet', 'Gluten-Free')">Gluten-Free</li>
-      </ul>
-    </div>
-
-    <!-- Trending Filter -->
-    <div class="filter-main" @click.stop="toggleDropdown('trending')">
-      Trending <i class="bx bxs-down-arrow"></i>
-      <ul v-if="activeDropdown === 'trending'" class="dropdown">
-        <li @click.stop="selectFilter('trending', 'Most Popular')">
-          Most Popular
-        </li>
-        <li @click.stop="selectFilter('trending', 'Top Rated')">Top Rated</li>
-      </ul>
-    </div>
-
-    <!-- Interacted With Filter -->
-    <div class="filter-main" @click.stop="toggleDropdown('interacted')">
-      Interacted With <i class="bx bxs-down-arrow"></i>
-      <ul v-if="activeDropdown === 'interacted'" class="dropdown">
-        <li @click.stop="selectFilter('interacted', 'Saved')">Saved</li>
-        <li @click.stop="selectFilter('interacted', 'Recently Viewed')">
-          Recently Viewed
-        </li>
-      </ul>
-    </div>
+  <!-- Loader -->
+  <div v-if="loading" class="loader-container">
+    <div class="loader"></div>
   </div>
 
-  <!-- Recipe List -->
-  <div class="recipe-container">
-    <template v-if="filteredRecipes.length > 0">
-      <RecipeCard
-        v-for="(recipe, index) in filteredRecipes"
-        :key="index"
-        :id="recipe.idMeal"
-        :title="recipe.title"
-        :description="recipe.description"
-        :image="recipe.image"
-        @click="goToDetails(recipe.idMeal)"
-      />
-    </template>
-    <p v-else class="empty-message">
-      No recipes found. Try adjusting the filters.
-    </p>
+  <div v-else>
+    <!-- Filter Section -->
+    <div class="filter" @click.stop>
+      <!-- Cuisine Filter -->
+      <div class="filter-main" @click.stop="toggleDropdown('cuisine')">
+        Filter by Cuisine <i class="bx bxs-down-arrow"></i>
+        <ul v-if="activeDropdown === 'cuisine'" class="dropdown">
+          <li @click.stop="selectFilter('cuisine', 'French')">French</li>
+          <li @click.stop="selectFilter('cuisine', 'Spanish')">Spanish</li>
+          <li @click.stop="selectFilter('cuisine', 'Italian')">Italian</li>
+          <li @click.stop="selectFilter('cuisine', 'Nigerian')">Nigerian</li>
+        </ul>
+      </div>
+
+      <!-- Diet Filter -->
+      <div class="filter-main" @click.stop="toggleDropdown('diet')">
+        Filter by Diet <i class="bx bxs-down-arrow"></i>
+        <ul v-if="activeDropdown === 'diet'" class="dropdown">
+          <li @click.stop="selectFilter('diet', 'Vegetarian')">Vegetarian</li>
+          <li @click.stop="selectFilter('diet', 'Vegan')">Vegan</li>
+          <li @click.stop="selectFilter('diet', 'Gluten-Free')">Gluten-Free</li>
+        </ul>
+      </div>
+
+      <!-- Trending Filter -->
+      <div class="filter-main" @click.stop="toggleDropdown('trending')">
+        Trending <i class="bx bxs-down-arrow"></i>
+        <ul v-if="activeDropdown === 'trending'" class="dropdown">
+          <li @click.stop="selectFilter('trending', 'Most Popular')">
+            Most Popular
+          </li>
+          <li @click.stop="selectFilter('trending', 'Top Rated')">Top Rated</li>
+        </ul>
+      </div>
+
+      <!-- Interacted With Filter -->
+      <div class="filter-main" @click.stop="toggleDropdown('interacted')">
+        Interacted With <i class="bx bxs-down-arrow"></i>
+        <ul v-if="activeDropdown === 'interacted'" class="dropdown">
+          <li @click.stop="selectFilter('interacted', 'Saved')">Saved</li>
+          <li @click.stop="selectFilter('interacted', 'Recently Viewed')">
+            Recently Viewed
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Recipe List -->
+    <div class="recipe-container">
+      <template v-if="filteredRecipes.length > 0">
+        <RecipeCard
+          v-for="(recipe, index) in filteredRecipes"
+          :key="index"
+          :id="recipe.idMeal"
+          :title="recipe.title"
+          :description="recipe.description"
+          :image="recipe.image"
+          @click="goToDetails(recipe.idMeal)"
+        />
+      </template>
+      <p v-else class="empty-message">
+        No recipes found. Try adjusting the filters.
+      </p>
+    </div>
   </div>
 </template>
 
@@ -84,6 +91,7 @@ const selectedFilters = ref({
   trending: null,
   interacted: null
 })
+const loading = ref(true)
 
 // Fetch recipes from TheMealDB API
 const fetchRecipes = async () => {
@@ -105,6 +113,8 @@ const fetchRecipes = async () => {
     filteredRecipes.value = [...recipes.value]
   } catch (error) {
     console.error('Error fetching recipes:', error)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -253,6 +263,29 @@ onUnmounted(() => {
 @media (max-width: 600px) {
   .recipe-container {
     grid-template-columns: 1fr;
+  }
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.loader {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #4c4242;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

@@ -72,7 +72,7 @@ const fetchRecipes = async () => {
       'https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/get-my-recipes?page=1',
       {
         headers: {
-          Authorization: ` Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       }
     )
