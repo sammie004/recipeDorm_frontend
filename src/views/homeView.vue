@@ -3,75 +3,68 @@
     Welcome Back, <span class="username">{{ username }}</span>
   </p>
 
-  <!-- Loader -->
-  <div v-if="loading" class="loader-container">
-    <div class="loader"></div>
+  <!-- Filter Section -->
+  <div class="filter" @click.stop>
+    <!-- Cuisine Filter -->
+    <div class="filter-main" @click.stop="toggleDropdown('cuisine')"><p>
+      Filter by Cuisine</p> <i class="bx bxs-down-arrow arrow"></i>
+      <ul v-if="activeDropdown === 'cuisine'" class="dropdown">
+        <li @click.stop="selectFilter('cuisine', 'French')">French</li>
+        <li @click.stop="selectFilter('cuisine', 'Spanish')">Spanish</li>
+        <li @click.stop="selectFilter('cuisine', 'Italian')">Italian</li>
+        <li @click.stop="selectFilter('cuisine', 'Nigerian')">Nigerian</li>
+      </ul>
+    </div>
+
+    <!-- Diet Filter -->
+    <div class="filter-main" @click.stop="toggleDropdown('diet')"><p>
+      Filter by Diet</p> <i class="bx bxs-down-arrow arrow"></i>
+      <ul v-if="activeDropdown === 'diet'" class="dropdown">
+        <li @click.stop="selectFilter('diet', 'Vegetarian')">Vegetarian</li>
+        <li @click.stop="selectFilter('diet', 'Vegan')">Vegan</li>
+        <li @click.stop="selectFilter('diet', 'Gluten-Free')">Gluten-Free</li>
+      </ul>
+    </div>
+
+    <!-- Trending Filter -->
+    <div class="filter-main" @click.stop="toggleDropdown('trending')">
+      <p>Trending</p> <i class="bx bxs-down-arrow arrow"></i>
+      <ul v-if="activeDropdown === 'trending'" class="dropdown">
+        <li @click.stop="selectFilter('trending', 'Most Popular')">
+          Most Popular
+        </li>
+        <li @click.stop="selectFilter('trending', 'Top Rated')">Top Rated</li>
+      </ul>
+    </div>
+
+    <!-- Interacted With Filter -->
+    <div class="filter-main" @click.stop="toggleDropdown('interacted')">
+      <p>Interacted With</p> <i class="bx bxs-down-arrow arrow"></i>
+      <ul v-if="activeDropdown === 'interacted'" class="dropdown">
+        <li @click.stop="selectFilter('interacted', 'Saved')">Saved</li>
+        <li @click.stop="selectFilter('interacted', 'Recently Viewed')">
+          Recently Viewed
+        </li>
+      </ul>
+    </div>
   </div>
 
-  <div v-else>
-    <!-- Filter Section -->
-    <div class="filter" @click.stop>
-      <!-- Cuisine Filter -->
-      <div class="filter-main" @click.stop="toggleDropdown('cuisine')">
-        Filter by Cuisine <i class="bx bxs-down-arrow"></i>
-        <ul v-if="activeDropdown === 'cuisine'" class="dropdown">
-          <li @click.stop="selectFilter('cuisine', 'French')">French</li>
-          <li @click.stop="selectFilter('cuisine', 'Spanish')">Spanish</li>
-          <li @click.stop="selectFilter('cuisine', 'Italian')">Italian</li>
-          <li @click.stop="selectFilter('cuisine', 'Nigerian')">Nigerian</li>
-        </ul>
-      </div>
-
-      <!-- Diet Filter -->
-      <div class="filter-main" @click.stop="toggleDropdown('diet')">
-        Filter by Diet <i class="bx bxs-down-arrow"></i>
-        <ul v-if="activeDropdown === 'diet'" class="dropdown">
-          <li @click.stop="selectFilter('diet', 'Vegetarian')">Vegetarian</li>
-          <li @click.stop="selectFilter('diet', 'Vegan')">Vegan</li>
-          <li @click.stop="selectFilter('diet', 'Gluten-Free')">Gluten-Free</li>
-        </ul>
-      </div>
-
-      <!-- Trending Filter -->
-      <div class="filter-main" @click.stop="toggleDropdown('trending')">
-        Trending <i class="bx bxs-down-arrow"></i>
-        <ul v-if="activeDropdown === 'trending'" class="dropdown">
-          <li @click.stop="selectFilter('trending', 'Most Popular')">
-            Most Popular
-          </li>
-          <li @click.stop="selectFilter('trending', 'Top Rated')">Top Rated</li>
-        </ul>
-      </div>
-
-      <!-- Interacted With Filter -->
-      <div class="filter-main" @click.stop="toggleDropdown('interacted')">
-        Interacted With <i class="bx bxs-down-arrow"></i>
-        <ul v-if="activeDropdown === 'interacted'" class="dropdown">
-          <li @click.stop="selectFilter('interacted', 'Saved')">Saved</li>
-          <li @click.stop="selectFilter('interacted', 'Recently Viewed')">
-            Recently Viewed
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Recipe List -->
-    <div class="recipe-container">
-      <template v-if="filteredRecipes.length > 0">
-        <RecipeCard
-          v-for="(recipe, index) in filteredRecipes"
-          :key="index"
-          :id="recipe.idMeal"
-          :title="recipe.title"
-          :description="recipe.description"
-          :image="recipe.image"
-          @click="goToDetails(recipe.idMeal)"
-        />
-      </template>
-      <p v-else class="empty-message">
-        No recipes found. Try adjusting the filters.
-      </p>
-    </div>
+  <!-- Recipe List -->
+  <div class="recipe-container">
+    <template v-if="filteredRecipes.length > 0">
+      <RecipeCard
+        v-for="(recipe, index) in filteredRecipes"
+        :key="index"
+        :id="recipe.idMeal"
+        :title="recipe.title"
+        :description="recipe.description"
+        :image="recipe.image"
+        @click="goToDetails(recipe.idMeal)"
+      />
+    </template>
+    <p v-else class="empty-message">
+      No recipes found. Try adjusting the filters.
+    </p>
   </div>
 </template>
 
@@ -91,7 +84,6 @@ const selectedFilters = ref({
   trending: null,
   interacted: null
 })
-const loading = ref(true)
 
 // Fetch recipes from TheMealDB API
 const fetchRecipes = async () => {
@@ -113,8 +105,6 @@ const fetchRecipes = async () => {
     filteredRecipes.value = [...recipes.value]
   } catch (error) {
     console.error('Error fetching recipes:', error)
-  } finally {
-    loading.value = false
   }
 }
 
@@ -169,15 +159,37 @@ onUnmounted(() => {
 
 <style scoped>
 /* User Welcome Text */
+
+.filter-main {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+}
+
+.filter-main p{
+  margin: 5px;
+}
+
+.arrow {
+  margin-top: 10px;
+  padding-right:8px;
+}
+
 .user {
-  text-align: center;
-  font-size: 1.5rem;
+  text-align: left;
+  font-size: 2rem;
   color: black;
-  margin-top: 25px;
-  margin-bottom: 60px;
+  margin-top: 15px;
   position: absolute;
   top: 0;
-  left: 15%;
+  left: 12.5%;
+}
+
+
+
+.username {
+  font-weight: 500;
+  font-size: 2rem;
 }
 
 /* Filter Section */
@@ -186,27 +198,22 @@ onUnmounted(() => {
   justify-content: center;
   margin-bottom: 60px;
   position: absolute;
-  left: 15%;
-  top: 15%;
+  left: 12.5%;
+  top: 20%;
 }
 
 .filter-main {
   color: white;
-  padding: 10px;
   width: 180px;
   margin-right: 20px;
-  border-radius: 28px;
+  border-radius: 10px;
+  border: 2px solid hsl(0, 11%, 25%);
   transition: 0.5s ease;
-  background: hsl(0, 11%, 25%);
+  color: hsl(0, 11%, 25%);
   cursor: pointer;
-  text-align: center;
   position: relative;
 }
-.filter-main:hover {
-  border: 1px solid black;
-  color: black;
-  background-color: white;
-}
+
 
 /* Dropdown Styles */
 .dropdown {
@@ -236,7 +243,7 @@ onUnmounted(() => {
   width: 60%;
   position: absolute;
   top: 200px; /* Adjust as needed for vertical positioning */
-  left: 40%;
+  left: 37%;
   transform: translateX(-40%);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -263,29 +270,6 @@ onUnmounted(() => {
 @media (max-width: 600px) {
   .recipe-container {
     grid-template-columns: 1fr;
-  }
-}
-
-.loader-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-.loader {
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #4c4242;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
   }
 }
 </style>

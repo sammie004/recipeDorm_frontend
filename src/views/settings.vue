@@ -1,5 +1,4 @@
 <template>
-  <navbar />
   <div class="settings-fullscreen">
     <div class="settings-container">
       <h2>Settings</h2>
@@ -113,7 +112,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import navbar from '@/components/Navbar.vue'
 
 const darkMode = ref(false)
 const notifications = ref(true)

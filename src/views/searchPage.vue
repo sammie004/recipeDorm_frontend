@@ -17,7 +17,7 @@
   <div class="results-container">
     <div v-if="loading" class="loading">
       <div class="progress-bar">
-        <div class="loader"></div>
+        <div class="progress"></div>
       </div>
       <p>{{ loadingMessage }}</p>
     </div>
@@ -28,7 +28,7 @@
         v-for="recipe in recipes"
         :key="recipe.recipeId"
         :id="recipe.recipeId"
-        :title="recipe.title"
+        :title="recipe.title.length > 30 ? recipe.title.substring(0, 30) + '...' : recipe.title"
         :description="recipe.description"
         :image="recipe.imageUrl"
         @click="goToDetails(recipe.recipeId)"
@@ -185,65 +185,51 @@ onMounted(() => {
 
 .results-container {
   width: 100%;
-  margin: auto;
   padding-top: 20px;
   text-align: center;
   position: absolute;
   top: 50%;
-  left: 17.5%;
+  left: 10%;
 }
 
 .recipe-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+    padding:0 200px 0px 0;
+
 }
 
 .loading {
   font-size: 1.2rem;
   color: black;
   position: relative;
-  margin-left: -37%;
-  margin-top: -3%;
+  left: -15%;
 }
 
 .progress-bar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60px; /* Ensure the container has height */
+  width: 200px;
+  height: 10px;
+  background: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px auto;
 }
 
-/* HTML: <div class="loader"></div> */
-.loader {
-  width: 50px;
-  aspect-ratio: 1;
-  display: grid;
-  border: 4px solid #0000;
-  border-radius: 50%;
-  border-right-color: #705d5d;
-  animation: l15 1s infinite linear;
+.progress {
+  width: 0;
+  height: 100%;
+  background: hsl(0, 11%, 25%);
+  animation: load 8s ease-in-out forwards;
 }
-.loader::before,
-.loader::after {
-  content: '';
-  grid-area: 1/1;
-  margin: 2px;
-  border: inherit;
-  border-radius: 50%;
-  animation: l15 2s infinite;
-}
-.loader::after {
-  margin: 8px;
-  animation-duration: 3s;
-}
-@keyframes l15 {
+
+@keyframes load {
+  0% {
+    width: 0;
+  }
   100% {
-    transform: rotate(1turn);
+    width: 100%;
   }
 }
-
 
 .no-results {
   position: relative;

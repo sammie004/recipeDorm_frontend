@@ -233,11 +233,20 @@ const shortDescription = computed(() => {
 </script>
 
 <template>
-  <div class="recipe-card">
-    <img :src="image" :alt="title" class="recipe-image" />
-    <div class="recipe-content">
-      <h3 class="recipe-title">{{ title }}</h3>
-      <p class="recipe-description">{{ shortDescription }}</p>
+  <div class="recipe-card" @click="goToDetails(id)">
+    <div class = "image">
+    <img :src="image" :alt="title" class="recipe-image" />  </div>
+    <div class="recipe-content"> 
+      <div><h3 class="recipe-title">{{ title }}</h3></div> 
+      
+      <div class="recipe-descriptions">
+      <div>
+        <p class="recipe-description">{{ shortDescription }}</p>
+      </div>
+      <div>
+        <p class ="view">View</p>
+      </div>
+      </div> 
     </div>
     <div class="recipe-actions">
       <button class="icon-btn" @click.stop="toggleBookmark">
@@ -250,24 +259,9 @@ const shortDescription = computed(() => {
         ></i>
         <span class="likes-count">{{ likesCount }}</span>
       </button>
-      <button class="icon-btn" @click.stop="toggleShareModal">
+      <button class="icon-btn" @click.stop="goToDetails(id)">
         <i class="bx bx-share-alt"></i>
       </button>
-    </div>
-
-    <!-- Share Modal -->
-    <div v-if="showShareModal" class="modal-overlay" @click="toggleShareModal">
-      <div class="share-modal" @click.stop>
-        <h3>Share this Recipe</h3>
-        <button class="close-btn" @click="toggleShareModal">✖</button>
-
-        <div class="share-options">
-          <button @click="copyLink">Copy Link</button>
-          <button @click="shareOnSocial('facebook')">Facebook</button>
-          <button @click="shareOnSocial('twitter')">Twitter</button>
-          <button @click="shareOnSocial('whatsapp')">WhatsApp</button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -276,57 +270,90 @@ const shortDescription = computed(() => {
 /* CARD CONTAINER */
 .recipe-card {
   position: relative;
-  top: 40%;
-  left: -14%;
+  top: 1%;
+  left:-2%;
   background: hsl(0, 17%, 90%);
   border-radius: 12px;
   overflow: hidden;
   width: 300px;
-  height: 300px;
+  height: 100;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1.3rem;
+  margin-bottom: 2rem;
 }
 
 /* Hover Effect */
 .recipe-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  transform: scale(1.05);
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 10px 20px;
+}
+
+.recipe-description {
+  display: flex;
 }
 
 /* IMAGE */
 .recipe-image {
   width: 100%;
-  height: 100px;
+  height: 165px;
   object-fit: cover;
   transition: 0.5s;
 }
 .recipe-image:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 /* CONTENT */
 .recipe-content {
   padding: 15px;
-  text-align: center;
-  flex-grow: 1;
+  text-align: left;
+  /* display: flex; */
+  /* align-items: center; */
+  /* flex-grow: 1; */
+  margin-bottom: 2px;
 }
 
+.recipe-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.recipe-descriptions {
+  display:flex;
+  justify-content:space-between;
+  margin-top: 10px;
+}
+
+.view  {
+  background:#473939;
+  color: white;
+  padding: 5px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top:-5px;
+  transition:0.3s ease;
+}
+.view:hover{
+  background:transparent;
+  color:#473939;
+  cursor:pointer;
+  border: 1px solid #473939;
+}
 /* TITLE */
 .recipe-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 10px;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: hsl(0, 11%, 25%);
 }
 
 /* DESCRIPTION */
 .recipe-description {
   font-size: 1rem;
   color: #555;
-  line-height: 1.5;
+  line-height: 1.1;
 }
 
 /* ACTION ICONS */
@@ -334,9 +361,10 @@ const shortDescription = computed(() => {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 10px;
+  /*margin-top: -50px; */
+  padding: 5px;
   border-top: 1px solid #eee;
-  background: hsl(0, 11%, 25%);
+  background: #473939;
 }
 
 .icon-btn {
@@ -359,60 +387,8 @@ const shortDescription = computed(() => {
   margin-left: 0.25rem;
   vertical-align: middle;
 }
-/* Modal Background */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-/* Modal Box */
-.share-modal {
-  background: white;
-  padding: 20px;
-  width: 300px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  position: relative;
-}
-
-/* Close Button */
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-/* Share Options */
-.share-options {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.share-options button {
-  background: #ff6f61;
-  border: none;
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.share-options button:hover {
-  background: #ff5045;
+p{
+  margin:0;
+  padding:0;
 }
 </style>
