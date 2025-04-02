@@ -87,7 +87,7 @@ const fetchBookmarks = async () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: token ? `Bearer ${token}` : ''
+          Authorization: `token ? Bearer ${token} : ''`
         }
       }
     )
@@ -143,7 +143,7 @@ const toggleBookmark = async recipe => {
       })
       if (!response.ok) {
         const errData = await response.json()
-        console.error(`Failed to remove bookmark: ${response.status}`, errData)
+        console.error(`Failed to remove bookmark: ${response.status}, errData`)
         throw new Error(`Failed to remove bookmark: ${response.status}`)
       }
       const result = await response.json()
@@ -174,7 +174,7 @@ const toggleBookmark = async recipe => {
       )
       if (!response.ok) {
         const errData = await response.json()
-        console.error(`Failed to bookmark recipe: ${response.status}`, errData)
+        console.error(`Failed to bookmark recipe: ${response.status}, errData`)
         throw new Error(`Failed to bookmark recipe: ${response.status}`)
       }
       const result = await response.json()
@@ -204,7 +204,6 @@ const toggleBookmark = async recipe => {
   background-color: #ffffff;
   /* Sidebar is assumed to be 80px, so adding left padding to accommodate it */
   padding-left: 80px;
-  
 }
 
 .content-wrapper {

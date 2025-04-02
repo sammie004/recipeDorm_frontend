@@ -231,7 +231,7 @@ const shortDescription = computed(() => {
 
 const shareRecipe = async () => {
   try {
-    const recipeUrl = `${window.location.origin}/recipes/${props.id}` // Replace with the actual recipe URL
+    const recipeUrl = `${window.location.origin}/recipeDetails/${props.id}` // Replace with the actual recipe URL
     const recipeTitle = props.title
     const recipeDescription = props.description
     const recipeImage = props.image // Assuming this is the image URL of the recipe
