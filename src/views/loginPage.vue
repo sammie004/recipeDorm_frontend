@@ -31,11 +31,11 @@
           <span v-if="!loading">Sign In</span>
           <span v-else class="spinner"></span>
         </button>
-        <p class="continue">or</p>
+        <!-- <p class="continue">or</p>
 
         <button type="button" class="google-btn" @click="handleGoogleLogin">
           <i class="bx bxl-google"></i> Continue with Google
-        </button>
+        </button> -->
       </form>
 
       <p class="signup-text">

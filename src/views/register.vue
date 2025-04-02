@@ -59,13 +59,12 @@
 
         <!-- Sign Up Button -->
         <button type="submit" class="register-btn">Sign Up</button>
-
+        <!-- 
         <p class="continue">or</p>
 
-        <!-- Google Register Button -->
         <button type="button" class="google-btn" @click="handleGoogleRegister">
           <i class="bx bxl-google"></i> Continue with Google
-        </button>
+        </button> -->
       </form>
 
       <!-- Redirect to Login -->
