@@ -144,7 +144,7 @@ onMounted(() => {
   margin-top: 15px;
   position: absolute;
   top: 0;
-  left: 12.5%;
+  left: 15.5%;
 }
 
 .username {
@@ -158,8 +158,8 @@ onMounted(() => {
   justify-content: center;
   margin-bottom: 60px;
   position: absolute;
-  left: 12.5%;
-  top: 20%;
+  left: 15.5%;
+  top: 15%;
 }
 
 .filter-main {
@@ -202,11 +202,11 @@ onMounted(() => {
   width: 60%;
   position: absolute;
   top: 200px; /* Adjust as needed for vertical positioning */
-  left: 37%;
+  left: 40%;
   transform: translateX(-40%);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 65px;
+  gap: 60px;
   min-height: 200px; /* Fixed minimum height */
   align-items: start;
 }
@@ -243,15 +243,109 @@ onMounted(() => {
   }
 }
 
-/* Responsive adjustments */
-@media (max-width: 900px) {
-  .recipe-container {
-    grid-template-columns: repeat(2, 1fr);
+/* Adjust sidebar behavior on small screens */
+@media (max-width: 600px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 280px; /* Ensure it's wide enough when open */
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sec-toggle-btn {
+    display: flex;
+    top: 15px;
+    right: 15px;
+    font-size: 1.8rem;
+    width: 45px;
+    height: 45px;
+  }
+  .user {
+    font-size: 1.5rem;
+    top: 40px;
+    margin-bottom: 30px;
+    left: 5%;
   }
 }
+
+/* Adjust recipe grid layout */
+@media (max-width: 900px) {
+  .recipe-container {
+    width: 80%;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    margin-left: 11%;
+  }
+  .filter {
+    margin-top: 20px;
+    display: flex;
+    /* flex-direction: column; */
+    align-items: center;
+    gap: 12px;
+    width: 380px;
+    left: 15%;
+    font-size: 15px;
+    top: 8%;
+  }
+
+  .filter-main {
+    width: 90%;
+    text-align: center;
+    padding: 3px;
+  }
+}
+
 @media (max-width: 600px) {
   .recipe-container {
+    width: 90%;
     grid-template-columns: 1fr;
+    gap: 30px;
+    top: 220px; /* Move up slightly for better positioning */
+    margin-left: 9%;
+  }
+
+  .user {
+    font-size: 1.5rem;
+    top: 40px;
+    margin-bottom: 30px;
+    left: 5%;
+  }
+
+  .filter {
+    margin-top: 20px;
+    display: flex;
+    /* flex-direction: column; */
+    align-items: center;
+    gap: 12px;
+    width: 380px;
+    left: 4%;
+    font-size: 15px;
+    top: 15%;
+  }
+
+  .filter-main {
+    width: 90%;
+    text-align: center;
+    padding: 3px;
+  }
+  .empty-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 1.2rem;
+  color: gray;
+  margin-top: 20px;
+  margin-right: 30%;
+}
+}
+
+/* Adjust loader positioning */
+@media (max-width: 600px) {
+  .loader {
+    left: 35%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 </style>

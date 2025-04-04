@@ -27,15 +27,10 @@
           />
         </div>
 
-        <button type="submit" class="login-btn">
+        <button type="submit" class="login-btn" :disabled="loading">
           <span v-if="!loading">Sign In</span>
           <span v-else class="spinner"></span>
         </button>
-        <!-- <p class="continue">or</p>
-
-        <button type="button" class="google-btn" @click="handleGoogleLogin">
-          <i class="bx bxl-google"></i> Continue with Google
-        </button> -->
       </form>
 
       <p class="signup-text">
@@ -100,26 +95,25 @@ const handleLogin = async () => {
   }
 }
 
-const handleGoogleLogin = () => {
-  window.location.href =
-    'https://recipedormapi20250315070938.azurewebsites.net/api/auth/google-sign-in'
-}
-
 const closeModal = () => {
   showModal.value = false
 }
 </script>
 
 <style scoped>
+/* Container: Full viewport and centered content */
 .login-container {
-  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100vh; /* Full height of viewport */
+  width: 100vw; /* Full width */
+  margin: 0;
+  padding: 0;
   background: white;
-  padding: 20px;
+  margin-left: -7%;
 }
-
+/* Login Box */
 .login-box {
   background: white;
   padding: 2rem;
@@ -127,10 +121,12 @@ const closeModal = () => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   max-width: 400px;
   width: 100%;
+  height: 70vh;
   text-align: center;
   border: 1px solid black;
 }
 
+/* Typography and spacing */
 h2 {
   color: #333;
   font-size: 1.8rem;
@@ -142,6 +138,7 @@ p {
   margin-bottom: 20px;
 }
 
+/* Input Groups */
 .input-group {
   margin-bottom: 15px;
   text-align: left;
@@ -168,6 +165,7 @@ p {
   box-shadow: 0 0 5px rgba(255, 126, 95, 0.5);
 }
 
+/* Button Styles */
 .login-btn {
   width: 100%;
   padding: 12px;
@@ -183,34 +181,13 @@ p {
   justify-content: center;
 }
 
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .login-btn:hover {
   box-shadow: 0 8px 15px #3b2f2f;
-  transform: scale(1.05);
-}
-
-.continue {
-  color: #666;
-  margin: 20px 0;
-}
-
-.google-btn {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  background: white;
-  color: #333;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.google-btn:hover {
-  background: #f0f0f0;
   transform: scale(1.05);
 }
 
@@ -228,7 +205,7 @@ p {
   text-decoration: underline;
 }
 
-/* Modal Popup Styles */
+/* Modal Popup */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -279,7 +256,6 @@ p {
 }
 
 /* Loader (spinner) styles */
-/* HTML: <div class="loader"></div> */
 .spinner {
   width: 35px;
   height: 25px;
@@ -289,6 +265,7 @@ p {
   background-size: 20% 100%;
   animation: l1 1s infinite linear;
 }
+
 @keyframes l1 {
   0% {
     background-size: 20% 100%, 20% 100%, 20% 100%;
@@ -307,42 +284,47 @@ p {
   }
 }
 
-/* Responsive Design for Mobile */
-@media (max-width: 768px) {
+/* Responsive Media Queries */
+
+/* Responsive Design */
+
+/* Adjust for medium screens (tablets, small laptops) */
+@media (max-width: 1024px) {
   .login-box {
     max-width: 90%;
-    padding: 1.5rem;
-  }
-  h2 {
-    font-size: 1.5rem;
-  }
-  .input-group input {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
-  .login-btn,
-  .google-btn {
-    padding: 10px;
-    font-size: 0.9rem;
+    padding: 1.8rem;
   }
 }
 
+/* Adjust for tablets and larger mobile screens */
+@media (max-width: 768px) {
+  .login-container{
+    margin-left: -7%;
+  }
+  .login-box {
+    max-width: 74%;
+    padding: 1.5rem;
+  }
+}
+
+/* Adjust for very small screens */
 @media (max-width: 480px) {
   .login-box {
+    width: 90%;
     padding: 1rem;
   }
-  h2 {
-    font-size: 1.3rem;
-  }
-  .input-group input {
-    padding: 8px;
-    font-size: 0.8rem;
-  }
-  .login-btn,
-  .google-btn {
-    padding: 8px;
-    font-size: 0.8rem;
-  }
+}
+
+/* Fix body to prevent overflow issues */
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
 }
 </style>
 

@@ -58,7 +58,12 @@
         </div>
 
         <!-- Sign Up Button -->
-        <button type="submit" class="register-btn">Sign Up</button>
+        <!-- <button type="submit" class="register-btn">Sign Up</button> -->
+        <!-- Sign Up Button with Loader -->
+        <button type="submit" class="register-btn" :disabled="loading">
+          <span v-if="loading">Signing Up...</span>
+          <span v-else>Sign Up</span>
+        </button>
         <!-- 
         <p class="continue">or</p>
 
@@ -196,13 +201,15 @@ onMounted(async () => {
 <style scoped>
 .register-container {
   height: 100vh;
+  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
   background: white;
   position: relative;
-  top: 15%;
+  top: 15%;;
   padding: 20px;
+  margin-left: -7%;
 }
 
 .register-box {
@@ -406,6 +413,26 @@ p {
   .google-btn {
     padding: 8px;
     font-size: 0.8rem;
+  }
+}
+
+/* button loaders */
+.loader {
+  width: 16px;
+  height: 16px;
+  border: 3px solid white;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

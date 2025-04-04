@@ -69,8 +69,35 @@ const messages = [
   '🔪 Chopping up some ideas...',
   '🔥 Turning up the heat...',
   '🥄 Stirring the magic...',
-  '🍽️ Plating up your dish...'
-]
+  '🍽️ Plating up your dish...',
+  'Good things take time... like slow-cooked ribs! 🍖',
+  'Loading... (Granny always said patience is a virtue! 😂)',
+  'Did someone say snacks? 🍿',
+  'Hang tight! Your recipes are being freshly served! 😋',
+  '🍕 Waiting for the perfect slice...',
+  '🥑 Mashing some avocados... almost there!',
+  '🍔 Flipping the burgers... one sec!',
+  '🍩 Donut worry, we’re almost done! 🍩',
+  '🥕 Prepping the ingredients... good food takes time!',
+  '🍰 Baking up something sweet just for you!',
+  '🍵 Steeping the flavors... almost ready!',
+  '🌮 Wrapping things up like a tasty burrito!',
+  '🍉 Slicing up something refreshing!',
+  '🥓 Crisping up the bacon... smells amazing!',
+  '🥗 Tossing up something fresh and delicious!',
+  '🎛️ Blending flavors like a pro!',
+  '🍯 Drizzling some sweetness into the mix!',
+  '🥖 Kneading the dough... good things take time!',
+  '🍚 Cooking up something warm and comforting!',
+  '🌶️ Adding a little spice to the experience!',
+  '🎂 Letting the batter rise... good things are coming!',
+  '🍕 Extra cheese? We got you!',
+  '🧁 Frosting things up for the final touch!',
+  '🐟 Reeling in the freshest catch!',
+  '🍔 Stacking up the layers... almost there!',
+  '🥜 Spreading the peanut butter evenly...'
+];
+
 
 const fetchRecipes = async () => {
   if (!query.value.trim()) return
@@ -85,7 +112,7 @@ const fetchRecipes = async () => {
   const interval = setInterval(() => {
     loadingMessage.value = messages[index % messages.length]
     index++
-  }, 1500)
+  }, 2000)
 
   const token = localStorage.getItem('token')
   try {

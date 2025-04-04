@@ -155,4 +155,75 @@ onMounted(async () => {
   font-size: 1.3rem;
   margin-top: 40px;
 }
+/* Responsive Design */
+/* For tablets and mobile (max-width 768px) */
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.8rem; /* Make title slightly smaller */
+  }
+
+  .recipe-image {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  .description {
+    font-size: 1rem;
+    padding: 0 10px; /* More padding on mobile */
+  }
+
+  .section h2 {
+    font-size: 1.5rem;
+  }
+
+  .ingredients li,
+  .steps li {
+    font-size: 1rem; /* Adjust step and ingredient text for better readability */
+  }
+
+  /* Disable hover effect on smaller screens */
+  .recipe-image:hover {
+    transform: none;
+  }
+
+  .ingredients,
+  .steps {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* For smaller screens (max-width 480px) */
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.5rem; /* Further reduce title font size */
+  }
+
+  .recipe-image {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+  }
+
+  .description {
+    font-size: 0.95rem;
+    padding: 0 15px; /* Add more padding */
+  }
+
+  .section h2 {
+    font-size: 1.3rem;
+  }
+
+  .ingredients li,
+  .steps li {
+    font-size: 0.95rem; /* Smaller text size */
+  }
+
+  .loading,
+  .error {
+    font-size: 1.2rem;
+    margin-top: 30px;
+  }
+}
 </style>

@@ -18,6 +18,11 @@ const router = useRouter()
 const isLiked = ref(props.isLikedByUser)
 const likesCount = ref(props.likesCount)
 const isBookmarked = ref(props.isBookmarkedByUser || false)
+const shortTitle = computed(() => {
+  if (!props.title) return ''
+  const words = props.title.split(' ')
+  return words.length <= 4 ? props.title : words.slice(0, 4).join(' ') + '...'
+})
 
 // Fetch recipe details from backend on mount
 const fetchRecipeDetails = async () => {
@@ -223,10 +228,9 @@ const goToDetails = id => {
 
 const shortDescription = computed(() => {
   if (!props.description) return ''
-  const words = props.description.split(' ')
-  return words.length <= 5
+  return props.description.length <= 30
     ? props.description
-    : words.slice(0, 5).join(' ') + '...'
+    : props.description.slice(0, 30) + '...'
 })
 
 const shareRecipe = async () => {
@@ -276,7 +280,7 @@ const shareRecipe = async () => {
     </div>
     <div class="recipe-content">
       <div>
-        <h3 class="recipe-title">{{ title }}</h3>
+        <h3 class="recipe-title">{{ shortTitle }}</h3>
       </div>
       <div class="recipe-descriptions">
         <div>

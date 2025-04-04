@@ -3,6 +3,7 @@
 
   <div class="bookmark-page">
     <div class="content-wrapper">
+      <!-- Fixed Header -->
       <div class="fixed-header">
         <h1>Saved Recipes</h1>
         <div class="search-container">
@@ -14,11 +15,16 @@
           />
         </div>
       </div>
+
+      <!-- Bookmark List -->
       <div class="bookmark-list">
+        <!-- Loading Indicator -->
         <div v-if="loading" class="loading-container">
           <div class="loader"></div>
           <p class="loading-message">{{ funnyMessage }}</p>
         </div>
+
+        <!-- Bookmark Cards -->
         <div
           class="bookmark-item"
           v-for="recipe in filteredBookmarks"
@@ -33,6 +39,8 @@
             @toggleBookmark="toggleBookmark(recipe)"
           />
         </div>
+
+        <!-- No Results Message -->
         <p v-if="!loading && filteredBookmarks.length === 0" class="no-results">
           No recipes found.
         </p>
@@ -47,10 +55,10 @@ import RecipeCard from '@/components/cards.vue'
 import Navbar from '@/components/Navbar.vue'
 
 const searchQuery = ref('')
-const bookmarks = ref([]) // Fetched from API
+const bookmarks = ref([])
 const loading = ref(true)
 
-// Humorous messages with emojis
+// Funny messages
 const funnyMessages = [
   'Fetching deliciousness... 🍲 Hold tight!',
   'Cooking up your saved recipes... 👨‍🍳 Almost there!',
@@ -61,7 +69,7 @@ const funnyMessages = [
 ]
 const funnyMessage = ref(funnyMessages[0])
 
-// Change the message every 2 seconds
+// Change loading message every 2 seconds
 let messageInterval
 onMounted(() => {
   let index = 0
@@ -87,7 +95,7 @@ const fetchBookmarks = async () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `token ? Bearer ${token} : ''`
+          Authorization: `Bearer ${token} `
         }
       }
     )
@@ -95,15 +103,11 @@ const fetchBookmarks = async () => {
       throw new Error(`Failed to fetch bookmarks: ${response.status}`)
     }
     const result = await response.json()
-    console.log('Bookmarks API Response:', result)
     if (result && result.data && Array.isArray(result.data.recipes)) {
       bookmarks.value = result.data.recipes.map(recipe => ({
         ...recipe,
-        isBookmarkedByUser: true // Force bookmarked state
+        isBookmarkedByUser: true
       }))
-      console.log('Mapped bookmarks:', bookmarks.value)
-    } else {
-      console.error('Unexpected response format', result)
     }
   } catch (error) {
     console.error('Error fetching bookmarks:', error)
@@ -124,16 +128,8 @@ const toggleBookmark = async recipe => {
       console.error('Invalid recipe ID:', recipe.recipeId)
       return
     }
-    console.log(
-      'Toggling bookmark for recipe:',
-      recipe.recipeId,
-      'isBookmarkedByUser:',
-      recipe.isBookmarkedByUser
-    )
     if (recipe.isBookmarkedByUser) {
-      // Call remove bookmark API
       const url = `https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/remove-bookmark?RecipeId=${recipe.recipeId}`
-      console.log('Calling remove bookmark API:', url)
       const response = await fetch(url, {
         method: 'DELETE',
         headers: {
@@ -142,25 +138,12 @@ const toggleBookmark = async recipe => {
         }
       })
       if (!response.ok) {
-        const errData = await response.json()
-        console.error(`Failed to remove bookmark: ${response.status}, errData`)
         throw new Error(`Failed to remove bookmark: ${response.status}`)
       }
-      const result = await response.json()
-      console.log('Remove Bookmark API Response:', result)
-      if (
-        result.message &&
-        result.message.toLowerCase().includes('unbookmarked')
-      ) {
-        bookmarks.value = bookmarks.value.filter(
-          r => r.recipeId !== recipe.recipeId
-        )
-        console.log('Bookmark removed for recipe:', recipe.recipeId)
-      } else {
-        console.error('Unexpected remove bookmark response', result)
-      }
+      bookmarks.value = bookmarks.value.filter(
+        r => r.recipeId !== recipe.recipeId
+      )
     } else {
-      // Otherwise, call add bookmark API.
       const response = await fetch(
         'https://recipedormapi20250315070938.azurewebsites.net/api/Recipes/bookmark-recipe',
         {
@@ -173,97 +156,70 @@ const toggleBookmark = async recipe => {
         }
       )
       if (!response.ok) {
-        const errData = await response.json()
-        console.error(`Failed to bookmark recipe: ${response.status}, errData`)
         throw new Error(`Failed to bookmark recipe: ${response.status}`)
       }
-      const result = await response.json()
-      console.log('Bookmark API Response:', result)
-      if (
-        result.message &&
-        result.message.toLowerCase().includes('bookmarked successfully')
-      ) {
-        recipe.isBookmarkedByUser = true
-        console.log('Bookmark added for recipe:', recipe.recipeId)
-      } else {
-        console.error('Unexpected bookmark API response', result)
-      }
+      recipe.isBookmarkedByUser = true
     }
   } catch (error) {
     console.error('Error toggling bookmark:', error)
   }
 }
 </script>
-
 <style scoped>
-.bookmark-page {
+.bookmark-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Exactly 3 cards per row */
+  gap: 10px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 10px;
+}
+.bookmark-item {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #ffffff;
-  /* Sidebar is assumed to be 80px, so adding left padding to accommodate it */
-  padding-left: 80px;
 }
 
 .content-wrapper {
   width: 100%;
-  max-width: 800px;
+  max-width: 1000px;
+  position: absolute;
+  top: 0;
+  left: 12%; /* Moves everything 35% from the left */
+  /* transform: translateX(-35%); Ensures proper centering */
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin: 0 auto;
+  text-align: center; /* Centers text content */
 }
 
+/* Fixed Header */
 .fixed-header {
   width: 100%;
+  background-color: transparent;
+  padding: 10px;
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+  text-align: center;
 }
 
 h1 {
   color: #4c4242;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
+/* Search Bar */
 .search-container {
-  width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  width: 100%;
 }
 
 .search-bar {
-  width: 100%;
+  width: 50%;
   padding: 10px;
   border: 1px solid #4c4242;
   border-radius: 8px;
   text-align: center;
 }
-
-.bookmark-list {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  width: 100%;
-  margin-top: 20px;
-}
-
-.bookmark-item {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin-top: 50px;
-}
-
+/* loader */
 .loader {
   width: 50px;
   aspect-ratio: 1;
@@ -271,7 +227,9 @@ h1 {
   border: 4px solid #0000;
   border-radius: 50%;
   border-right-color: #705d5d;
+  margin-left: -11%;
   animation: l15 1s infinite linear;
+  margin-bottom: 15px;
 }
 .loader::before,
 .loader::after {
@@ -292,47 +250,66 @@ h1 {
   }
 }
 
-.loading-message {
-  margin-top: 15px;
-  font-size: 1.1rem;
-  font-style: italic;
-  color: #4c4242;
+/* Grid layout for bookmark cards */
+.bookmark-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+  margin-top: 50px; /* Adjusted spacing */
 }
 
+/* Center each card */
+.bookmark-item {
+  display: flex;
+  justify-content: center;
+}
+
+/* Loading state */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+  position: absolute;
+  left: 5%;
+  /* margin-left: 99%; */
+}
+.loading-message {
+  color: black;
+  margin-right: 90px;
+}
+/* No results message */
 .no-results {
   color: #777;
   font-style: italic;
   margin-top: 20px;
+  margin-left: 90%;
   width: 100%;
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
+  .content-wrapper {
+    left: 50%;
+    transform: translateX(-50%); /* Centers content on smaller screens */
+  }
+
   .bookmark-list {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 600px) {
-  .fixed-header {
-    padding: 10px;
-  }
-  h1 {
-    font-size: 1.8rem;
-  }
   .bookmark-list {
     grid-template-columns: 1fr;
   }
-  .search-container {
-    width: 90%;
-  }
-}
-</style>
 
-<style>
-body {
-  overflow-x: hidden;
-  padding: 0;
-  margin: 0;
+  .search-bar {
+    width: 80%;
+  }
 }
 </style>
