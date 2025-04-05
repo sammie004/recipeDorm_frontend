@@ -284,7 +284,7 @@ const postRecipe = async () => {
     }
 
     alert('Recipe posted successfully!')
-    router.push('/myrecipe')
+    router.push('/myRecipes')
   } catch (error) {
     console.error('Error:', error)
     alert(error.message)

@@ -12,41 +12,21 @@
     <div v-if="loading" class="loader"></div>
 
     <!-- Recipe List -->
-    <div v-else-if="recipes.length" class="recipe-list">
-      <div
+    <div v-if="recipes.length" class="recipe-list">
+      <RecipeCard
         v-for="recipe in recipes"
-        :key="recipe.id"
-        class="recipe-card"
-        @click="goToDetails(recipe.id)"
-      >
-        <img :src="recipe.image" :alt="recipe.title" class="recipe-image" />
-        <div class="recipe-content">
-          <h3 class="recipe-title">{{ recipe.title }}</h3>
-          <p class="recipe-description">
-            {{ shortDescription(recipe.description) }}
-          </p>
-        </div>
-        <div class="recipe-actions">
-          <button class="icon-btn" @click.stop="toggleBookmark(recipe)">
-            <i
-              :class="
-                recipe.isBookmarked ? 'bx bx-bookmark' : 'bx bx-bookmark-alt'
-              "
-            ></i>
-          </button>
-          <button class="icon-btn" @click.stop="toggleLike(recipe)">
-            <i
-              :class="recipe.isLiked ? 'bx bx-heart' : 'bx bx-heart'"
-              :style="{ color: recipe.isLiked ? 'red' : '#666' }"
-            ></i>
-          </button>
-          <button class="icon-btn" @click.stop="goToDetails(recipe.id)">
-            <i class="bx bx-dots-horizontal-rounded"></i>
-          </button>
-        </div>
-      </div>
+        :key="recipe.recipeId"
+        :id="recipe.recipeId"
+        :title="
+          recipe.title.length > 30
+            ? recipe.title.substring(0, 30) + '...'
+            : recipe.title
+        "
+        :description="recipe.description"
+        :image="recipe.imageUrl"
+        @click="goToDetails(recipe.recipeId)"
+      />
     </div>
-
     <!-- Empty State -->
     <p v-else class="empty-message">You haven't added any recipes yet.</p>
   </div>
@@ -56,6 +36,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Navbar from '@/components/Navbar.vue'
+import RecipeCard from '@/components/cards.vue'
 
 const recipes = ref([])
 const loading = ref(true)
@@ -97,19 +78,19 @@ const fetchRecipes = async () => {
   }
 }
 
-const toggleBookmark = recipe => {
-  recipe.isBookmarked = !recipe.isBookmarked
-}
+// const toggleBookmark = recipe => {
+//   recipe.isBookmarked = !recipe.isBookmarked
+// }
 
-const toggleLike = recipe => {
-  recipe.isLiked = !recipe.isLiked
-}
+// const toggleLike = recipe => {
+//   recipe.isLiked = !recipe.isLiked
+// }
 
-const shortDescription = description => {
-  if (!description) return ''
-  const words = description.split(' ')
-  return words.length <= 5 ? description : words.slice(0, 5).join(' ') + '...'
-}
+// const shortDescription = description => {
+//   if (!description) return ''
+//   const words = description.split(' ')
+//   return words.length <= 5 ? description : words.slice(0, 5).join(' ') + '...'
+// }
 
 onMounted(() => {
   fetchRecipes()
