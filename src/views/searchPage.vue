@@ -167,7 +167,7 @@ onMounted(() => {
   display: flex;
   position: absolute;
   top: 3%;
-  left: 0;
+  left: 1%;
   flex-direction: column;
   width: 100%;
   align-items: center;
@@ -192,6 +192,9 @@ onMounted(() => {
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
   max-width: 600px;
   width: 80%;
+  margin-top: -1%;
+  /* z-index: 1; */
+
 }
 
 .search-box input {
@@ -201,6 +204,7 @@ onMounted(() => {
   padding: 15px;
   font-size: 1.2rem;
   border-radius: 50px;
+  
 }
 
 .search-box button {
@@ -212,6 +216,7 @@ onMounted(() => {
   font-size: 1.1rem;
   margin-left: 10px;
   transition: 0.5s;
+  /* margin-top: -5%; */
 }
 
 .search-box button:hover {
