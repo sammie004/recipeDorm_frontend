@@ -278,11 +278,52 @@ onMounted(() => {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+  .recipe-list {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
   .header {
     flex-direction: column;
-    margin-top: -50px;
-    gap: 10px;
+    gap: 20px;
+    margin-top: 0;
+    margin-left: 0;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .recipe-list {
+    grid-template-columns: 1fr;
+    margin-left: 5%;
+    margin-top: -18%;
+  }
+
+  .recipe-card {
+    width: 100%;
+    height: auto;
+  }
+
+  .recipe-description {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 480px) {
+  .add-button {
+    width: 100%;
+  }
+
+  .recipe-title {
+    font-size: 1rem;
+  }
+
+  .recipe-description {
+    font-size: 0.85rem;
   }
 }
 </style>

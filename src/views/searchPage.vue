@@ -96,8 +96,7 @@ const messages = [
   '🐟 Reeling in the freshest catch!',
   '🍔 Stacking up the layers... almost there!',
   '🥜 Spreading the peanut butter evenly...'
-];
-
+]
 
 const fetchRecipes = async () => {
   if (!query.value.trim()) return
@@ -194,7 +193,6 @@ onMounted(() => {
   width: 80%;
   margin-top: -1%;
   /* z-index: 1; */
-
 }
 
 .search-box input {
@@ -204,7 +202,6 @@ onMounted(() => {
   padding: 15px;
   font-size: 1.2rem;
   border-radius: 50px;
-  
 }
 
 .search-box button {
@@ -307,6 +304,13 @@ onMounted(() => {
 .error {
   font-size: 1.5rem;
   color: black;
+}
+@media (max-width: 768px) {
+  .recipe-list {
+    grid-template-columns: 1fr;
+    margin-left: 5%;
+    margin-top: 3%;
+  }
 }
 </style>
 

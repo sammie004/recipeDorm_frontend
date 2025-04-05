@@ -286,8 +286,10 @@ const shareRecipe = async () => {
         <div>
           <p class="recipe-description">{{ shortDescription }}</p>
         </div>
+        <!-- <button class="view">View</button> -->
         <div>
-          <p class="view">View</p>
+          <!-- <p class="view">View</p> -->
+          <button class="view">View</button>
         </div>
       </div>
     </div>
@@ -318,25 +320,20 @@ const shareRecipe = async () => {
   border-radius: 12px;
   overflow: hidden;
   width: 300px;
-  height: 100;
+  height: 390px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
 }
 
-/* Hover Effect */
 .recipe-card:hover {
   transform: scale(1.05);
   box-shadow: rgba(0, 0, 0, 0.15) 0px 10px 20px;
 }
 
-.recipe-description {
-  display: flex;
-}
-
-/* IMAGE */
 .recipe-image {
   width: 100%;
   height: 165px;
@@ -347,63 +344,69 @@ const shareRecipe = async () => {
   transform: scale(1.1);
 }
 
-/* CONTENT */
 .recipe-content {
   padding: 15px;
   text-align: left;
-  /* display: flex; */
-  /* align-items: center; */
-  /* flex-grow: 1; */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   margin-bottom: 2px;
+}
+
+.recipe-title {
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: hsl(0, 11%, 25%);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .recipe-header {
   display: flex;
   justify-content: space-between;
 }
-
 .recipe-descriptions {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 10px;
   margin-top: 10px;
+}
+.recipe-description {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.1;
+  margin-top: 8px;
+  max-height: 2.2em;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .view {
   background: #473939;
   color: white;
-  padding: 5px 20px;
+  padding: 5px;
+  width:80px;
   border-radius: 10px;
   cursor: pointer;
-  margin-top: -5px;
+  margin-top: auto;
+  border: none;
   transition: 0.3s ease;
 }
 .view:hover {
   background: transparent;
   color: #473939;
-  cursor: pointer;
   border: 1px solid #473939;
 }
-/* TITLE */
-.recipe-title {
-  font-size: 1.4rem;
-  font-weight: 900;
-  letter-spacing: 1.5px;
-  color: hsl(0, 11%, 25%);
-}
 
-/* DESCRIPTION */
-.recipe-description {
-  font-size: 1rem;
-  color: #555;
-  line-height: 1.1;
-}
-
-/* ACTION ICONS */
 .recipe-actions {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  /*margin-top: -50px; */
   padding: 5px;
   border-top: 1px solid #eee;
   background: #473939;
@@ -423,12 +426,12 @@ const shareRecipe = async () => {
   transform: scale(1.1);
 }
 
-/* New style for likes count: reduced size */
 .likes-count {
   font-size: 0.8rem;
   margin-left: 0.25rem;
   vertical-align: middle;
 }
+
 p {
   margin: 0;
   padding: 0;
