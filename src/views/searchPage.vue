@@ -311,6 +311,11 @@ onMounted(() => {
     margin-left: 5%;
     margin-top: 3%;
   }
+  .error {
+  font-size: 1.5rem;
+  color: black;
+  margin-left: -20%;
+}
 }
 </style>
 

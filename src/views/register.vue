@@ -7,13 +7,13 @@
       <form @submit.prevent="handleRegister">
         <!-- Name Field -->
         <div class="input-group">
-          <label for="name">Full Name</label>
+          <label for="name">username</label>
           <input
             type="text"
             id="userName"
             v-model="formData.userName"
             :class="{ 'input-error': nameError }"
-            placeholder="Enter your full name"
+            placeholder="Enter your username"
             required
           />
           <p class="error-msg" v-if="nameError">
