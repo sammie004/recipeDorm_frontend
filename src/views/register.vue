@@ -61,7 +61,10 @@
         <!-- <button type="submit" class="register-btn">Sign Up</button> -->
         <!-- Sign Up Button with Loader -->
         <button type="submit" class="register-btn" :disabled="loading">
-          <span v-if="loading">Signing Up...</span>
+          <span v-if="loading"
+            >Signing Up...
+            <span class="loader"></span>
+          </span>
           <span v-else>Sign Up</span>
         </button>
         <!-- 
@@ -106,6 +109,7 @@ const formData = ref({
 const nameError = ref(false)
 const showModal = ref(false)
 const modalMessage = ref('')
+const loading = ref(false)
 
 // Regex for password validation
 const passwordRegex =
@@ -113,9 +117,11 @@ const passwordRegex =
 
 const handleRegister = async () => {
   nameError.value = false
+  loading.value = true
 
   if (formData.value.userName.includes(' ')) {
     nameError.value = true
+    loading.value = false
     return
   }
 
@@ -123,11 +129,13 @@ const handleRegister = async () => {
     showModal.value = true
     modalMessage.value =
       'Password must be at least 8 characters long and include at least one uppercase letter, one number, and one special character.'
+    loading.value = false
     return
   }
   if (formData.value.password !== formData.value.confirmPassword) {
     showModal.value = true
     modalMessage.value = "The passwords don't match."
+    loading.value = false
     return
   }
 
@@ -151,17 +159,28 @@ const handleRegister = async () => {
       }
     )
     const data = await response.json()
+
+    console.log('Error Response:', data)
+    // Check if the response is not OK first, then handle specific error messages
     if (!response.ok) {
-      showModal.value = true
-      modalMessage.value =
-        data.message || 'Registration failed. Account may already exist.'
+      // If the status is false and errors array exists
+      if (data.status === false && data.errors && Array.isArray(data.errors)) {
+        // Join all errors into a single string to display
+        const errorMessages = data.errors.join(' ')
+        showModal.value = true
+        modalMessage.value = errorMessages
+      } else {
+        showModal.value = true
+        modalMessage.value =
+          data.message || 'Registration failed. Please try again.'
+      }
       return
     }
-    showModal.value = true
-    modalMessage.value = 'Registration successful! Please log in.'
   } catch (error) {
     showModal.value = true
     modalMessage.value = 'Network error. Please try again.'
+  } finally {
+    loading.value = false
   }
 }
 
@@ -207,7 +226,7 @@ onMounted(async () => {
   justify-content: center;
   background: white;
   position: relative;
-  top: 15%;;
+  top: 15%;
   padding: 20px;
   margin-left: -7%;
 }
@@ -317,7 +336,33 @@ p {
   color: #3b2f2f;
   text-decoration: none;
 }
+.loader {
+  width: 35px;
+  height: 25px;
+  aspect-ratio: 1;
+  --c: no-repeat linear-gradient(#fff 0 0);
+  background: var(--c) 0% 50%, var(--c) 50% 50%, var(--c) 100% 50%;
+  background-size: 20% 100%;
+  animation: l1 1s infinite linear;
+}
 
+@keyframes l1 {
+  0% {
+    background-size: 20% 100%, 20% 100%, 20% 100%;
+  }
+  33% {
+    background-size: 20% 10%, 20% 100%, 20% 100%;
+  }
+  50% {
+    background-size: 20% 100%, 20% 10%, 20% 100%;
+  }
+  66% {
+    background-size: 20% 100%, 20% 100%, 20% 10%;
+  }
+  100% {
+    background-size: 20% 100%, 20% 100%, 20% 100%;
+  }
+}
 .login-link:hover {
   text-decoration: underline;
 }
@@ -413,26 +458,6 @@ p {
   .google-btn {
     padding: 8px;
     font-size: 0.8rem;
-  }
-}
-
-/* button loaders */
-.loader {
-  width: 16px;
-  height: 16px;
-  border: 3px solid white;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-left: 8px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
   }
 }
 </style>

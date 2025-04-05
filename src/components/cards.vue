@@ -237,14 +237,19 @@ const shareRecipe = async () => {
   try {
     const recipeUrl = `${window.location.origin}/recipeDetails/${props.id}` // Replace with the actual recipe URL
     const recipeTitle = props.title
-    const recipeDescription = props.description
+    const limitedDescription = computed(() => {
+      const words = props.description.split(' ')
+      return words.length > 10
+        ? words.slice(0, 10).join(' ') + '...'
+        : props.description
+    })
     const recipeImage = props.image // Assuming this is the image URL of the recipe
 
     if (navigator.share) {
       // For mobile devices and browsers that support the Web Share API
       await navigator.share({
         title: recipeTitle,
-        text: recipeDescription,
+        // text: limitedDescription,
         url: recipeUrl
       })
       console.log('Recipe shared successfully!')
@@ -390,7 +395,7 @@ const shareRecipe = async () => {
   background: #473939;
   color: white;
   padding: 5px;
-  width:80px;
+  width: 80px;
   border-radius: 10px;
   cursor: pointer;
   margin-top: auto;
