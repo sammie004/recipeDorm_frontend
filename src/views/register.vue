@@ -175,7 +175,7 @@ const handleRegister = async () => {
           data.message || 'Registration failed. Please try again.'
       }
       return
-    } else if (data.status === true) {
+    } else {
       showModal.value = true
       modalMessage.value = 'Registration successful! Redirecting to login...'
     }

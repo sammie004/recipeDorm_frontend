@@ -230,7 +230,7 @@ onMounted(() => {
 }
 
 .no-results {
-  margin-left: 11%;
+  margin-left: -24%;
   color: black;
 }
 
