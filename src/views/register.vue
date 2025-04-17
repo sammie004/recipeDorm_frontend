@@ -175,6 +175,9 @@ const handleRegister = async () => {
           data.message || 'Registration failed. Please try again.'
       }
       return
+    } else if (data.status === true) {
+      showModal.value = true
+      modalMessage.value = 'Registration successful! Redirecting to login...'
     }
   } catch (error) {
     showModal.value = true
@@ -182,11 +185,6 @@ const handleRegister = async () => {
   } finally {
     loading.value = false
   }
-}
-
-const handleGoogleRegister = () => {
-  window.location.href =
-    'https://recipedormapi20250315070938.azurewebsites.net/api/auth/google-sign-in'
 }
 
 const closeModal = () => {

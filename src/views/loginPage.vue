@@ -72,8 +72,16 @@ const handleLogin = async () => {
         body: JSON.stringify(formData)
       }
     )
-    const data = await response.json()
+    console.log('Response Status:', response.status)
+
+    let data
+    try {
+      data = await response.json()
+    } catch (jsonError) {
+      throw new Error('Invalid JSON response')
+    }
     console.log(data)
+    console.log('API Response:', data)
     if (response.ok) {
       modalMessage.value = 'Login successful! Welcome to RecipeDorm...'
       showModal.value = true
@@ -82,8 +90,9 @@ const handleLogin = async () => {
       setTimeout(() => {
         router.push('/home')
       }, 2000)
-    } else {
-      modalMessage.value = data.message || 'Login failed: Invalid credentials'
+    } else if (data.message === 'User with email not found.') {
+      modalMessage.value =
+        data.message || 'Invalid email or password. Please try again.'
       showModal.value = true
     }
   } catch (error) {
