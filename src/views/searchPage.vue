@@ -226,7 +226,7 @@ onMounted(() => {
   text-align: center;
   position: absolute;
   top: 50%;
-  left: 10%;
+  left: 13.5%;
 }
 
 .no-results {
@@ -262,7 +262,7 @@ onMounted(() => {
   justify-content: center;
   width: 100%;
   margin-top: -1%;
-  margin-left: -1.5%;
+  margin-left: -3.5%;
 }
 
 .loader {
@@ -312,10 +312,10 @@ onMounted(() => {
     margin-top: 3%;
   }
   .error {
-  font-size: 1.5rem;
-  color: black;
-  margin-left: -20%;
-}
+    font-size: 1.5rem;
+    color: black;
+    margin-left: -20%;
+  }
 }
 </style>
 

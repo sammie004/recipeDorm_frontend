@@ -144,7 +144,7 @@ onMounted(() => {
   margin-top: 15px;
   position: absolute;
   top: 0;
-  left: 15.5%;
+  left: 13.5%;
 }
 
 .username {
@@ -158,7 +158,7 @@ onMounted(() => {
   justify-content: center;
   margin-bottom: 60px;
   position: absolute;
-  left: 15.5%;
+  left: 13.5%;
   top: 15%;
 }
 
@@ -202,7 +202,7 @@ onMounted(() => {
   width: 60%;
   position: absolute;
   top: 200px; /* Adjust as needed for vertical positioning */
-  left: 40%;
+  left: 38%;
   transform: translateX(-40%);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -246,6 +246,7 @@ onMounted(() => {
 /* Adjust sidebar behavior on small screens */
 @media (max-width: 600px) {
   .sidebar {
+    margin-top: 30%;
     transform: translateX(-100%);
     width: 280px; /* Ensure it's wide enough when open */
   }
@@ -276,7 +277,7 @@ onMounted(() => {
     width: 80%;
     grid-template-columns: repeat(2, 1fr);
     gap: 40px;
-    margin-left: 11%;
+    margin-left: 6%;
   }
   .filter {
     margin-top: 20px;
@@ -303,7 +304,7 @@ onMounted(() => {
     grid-template-columns: 1fr;
     gap: 30px;
     top: 220px; /* Move up slightly for better positioning */
-    margin-left: 9%;
+    margin-left: 15%;
   }
 
   .user {
@@ -331,13 +332,13 @@ onMounted(() => {
     padding: 3px;
   }
   .empty-message {
-  grid-column: 1 / -1;
-  text-align: center;
-  font-size: 1.2rem;
-  color: gray;
-  margin-top: 20px;
-  margin-right: 30%;
-}
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 1.2rem;
+    color: gray;
+    margin-top: 20px;
+    margin-right: 30%;
+  }
 }
 
 /* Adjust loader positioning */

@@ -75,7 +75,7 @@ const handleLogin = async () => {
     const data = await response.json()
     console.log(data)
     if (response.ok) {
-      modalMessage.value = 'Login successful! Redirecting to home page...'
+      modalMessage.value = 'Login successful! Welcome to RecipeDorm...'
       showModal.value = true
       localStorage.setItem('username', data.data.username)
       localStorage.setItem('token', data.data.token)
@@ -221,6 +221,7 @@ p {
 
 .modal-content {
   width: 300px;
+  margin-left: -7%;
   background: linear-gradient(135deg, #ffffff, #f7f7f7);
   padding: 20px;
   border-radius: 15px;
@@ -298,7 +299,7 @@ p {
 
 /* Adjust for tablets and larger mobile screens */
 @media (max-width: 768px) {
-  .login-container{
+  .login-container {
     margin-left: -7%;
   }
   .login-box {
@@ -309,6 +310,14 @@ p {
 
 /* Adjust for very small screens */
 @media (max-width: 480px) {
+  .modal-content {
+    margin-left: 1%;
+  }
+  .signup-text {
+    font-size: 0.9rem;
+    /* padding-bottom: 15px; */
+    margin-top: 1.5%;
+  }
   .login-box {
     width: 90%;
     padding: 1rem;

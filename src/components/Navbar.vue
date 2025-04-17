@@ -52,10 +52,11 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const isCollapsed = ref(false)
+const isCollapsed = ref(localStorage.getItem('sidebarCollapsed') === 'true')
 
 const toggleSidebar = () => {
   isCollapsed.value = !isCollapsed.value
+  localStorage.setItem('sidebarCollapsed', isCollapsed.value)
 }
 
 const goToSearch = () => {

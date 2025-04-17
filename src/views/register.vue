@@ -226,7 +226,7 @@ onMounted(async () => {
   justify-content: center;
   background: white;
   position: relative;
-  top: 15%;
+  top: 1%;
   padding: 20px;
   margin-left: -7%;
 }
