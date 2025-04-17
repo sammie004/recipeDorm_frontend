@@ -277,7 +277,7 @@ onMounted(() => {
     width: 80%;
     grid-template-columns: repeat(2, 1fr);
     gap: 40px;
-    margin-left: 6%;
+    margin-left: 7%;
   }
   .filter {
     margin-top: 20px;

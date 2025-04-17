@@ -387,6 +387,7 @@ p {
   text-align: center;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   animation: slideIn 0.5s ease-out;
+  margin-left: -7%;
 }
 
 @keyframes slideIn {

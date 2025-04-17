@@ -306,6 +306,7 @@ onMounted(() => {
   color: black;
 }
 @media (max-width: 768px) {
+  
   .recipe-list {
     grid-template-columns: 1fr;
     margin-left: 5%;

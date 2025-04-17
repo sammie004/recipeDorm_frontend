@@ -287,7 +287,7 @@ h1 {
   color: #777;
   font-style: italic;
   margin-top: 20px;
-  margin-left: 90%;
+  margin-left: 110%;
   width: 100%;
 }
 
@@ -301,6 +301,9 @@ h1 {
   .bookmark-list {
     grid-template-columns: repeat(2, 1fr);
   }
+  .no-results{
+    margin-left: 53%;
+  }
 }
 
 @media (max-width: 600px) {
@@ -310,6 +313,9 @@ h1 {
 
   .search-bar {
     width: 80%;
+  }
+  .no-results{
+    margin-left: 0;
   }
 }
 </style>

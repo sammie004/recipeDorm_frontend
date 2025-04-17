@@ -202,6 +202,7 @@ const logout = () => {
   .sidebar {
     transform: translateX(-100%);
     width: 80%;
+    /* position: fixed; */
   }
   .sidebar.open {
     transform: translateX(0);
